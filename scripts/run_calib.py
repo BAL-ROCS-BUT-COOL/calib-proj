@@ -24,11 +24,7 @@ np.random.seed(3)
 # PATHS
 images_parent_folder = str(Path(r"C:\Users\timfl\Documents\test_calibProj\aruco_4X4_50"))
 intrinsics_folder = Path(r"C:\Users\timfl\Documents\test_calibProj\intrinsics")
-# sequence_info_path = str(Path(r"C:\Users\timfl\Documents\Master Thesis\Final_XP\Projection_sequences\100_shifts\videos\apriltag\tag25h9\seq_info.pkl"))
 sequence_info_path = Path(r"video/seq_info.json")
-
-# seq_info = load_from_pickle(sequence_info_path)
-seq_info = load_seq_info_json(sequence_info_path)
 
 # PRE-PROCESSING PARAMETERS
 show_detection_images = False
@@ -44,38 +40,33 @@ external_calibrator_config = ExternalCalibratorConfig(
     least_squares_verbose = 0, # 0: silent, 1: report only final results, 2: report every iteration
 )
 out_folder_calib = Path("results")
-show_viz = 1
-save_viz = 0
-save_eval_metrics_to_json = 1
-save_scene = 0
-save_final_correspondences = 0
+show_viz = True
+save_viz = False
+save_eval_metrics_to_json = True
+save_scene = False
+save_final_correspondences = False
 
 
 
 ###################### PRE-PROCESSING: MSMs DETECTION ###########################
+seq_info = load_seq_info_json(sequence_info_path)
 centers_unordered_path = out_folder_calib / "preprocessing" / "centers_unordered.pkl"
-# centers_unordered = detect_marker_centers(images_parent_folder, 
-                                        #   intrinsics_folder, 
-                                        #   marker_system=seq_info['marker_system'], 
-                                        #   inverted_projections=seq_info['invert_colors'], 
-                                        #   show_detections=show_detection_images)
+centers_unordered = detect_marker_centers(images_parent_folder, 
+                                          intrinsics_folder, 
+                                          marker_system=seq_info['marker_system'], 
+                                          inverted_projections=seq_info['invert_colors'], 
+                                          show_detections=show_detection_images)
 # save_to_pickle(centers_unordered_path, centers_unordered)
-centers_unordered = load_from_pickle(centers_unordered_path)
+# centers_unordered = load_from_pickle(centers_unordered_path)
 
 centers_ordered = order_centers(centers_unordered, seq_info)
 msm_centers = msm_centers_from_marker_centers(centers_ordered)
 
 
-
 ###################### EXTERNAL CALIBRATION ###########################
-
 out_folder_calib.mkdir(parents=True, exist_ok=True)
 intrinsics = construct_cameras_intrinsics(images_parent_folder, intrinsics_folder)
 correspondences = convert_to_correspondences(msm_centers)
-
-# cameras = ['gopro4', 'gopro1']
-# correspondences = {camera: correspondences[camera] for camera in cameras}
-
 external_calibrator = ExternalCalibrator(correspondences=correspondences, 
                                         intrinsics=intrinsics, 
                                         config=external_calibrator_config
@@ -87,8 +78,6 @@ if success:
     generic_scene = scene_proj_estimate.generic_scene
     generic_obsv = external_calibrator.correspondences
     generic_scene.print_cameras_poses()
-
-
 
     # Save files
     generic_scene.save_cameras_poses_to_json(out_folder_calib / "camera_poses.json")
