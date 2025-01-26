@@ -6,14 +6,15 @@ from calib_commons.data.load_calib import construct_cameras_intrinsics
 from calib_commons.data.data_pickle import save_to_pickle, load_from_pickle
 from calib_commons.eval_generic_scene import eval_generic_scene
 from calib_commons.viz import visualization as generic_vizualization
+from calib_commons.world_frame import WorldFrame
 
 from calib_proj.utils import visualization
-from calib_proj.core.externalCalibrator2 import ExternalCalibrator2, WorldFrame, SolvingLevel
+from calib_proj.core.external_calibrator import ExternalCalibrator
 from calib_proj.core.config import ExternalCalibratorConfig, SolvingLevel
 from calib_proj.utils.data import convert_to_correspondences
-from calib_proj.preprocessing.detection import detect_marker_centers, MarkerSystems
+from calib_proj.preprocessing.detection import detect_marker_centers
 from calib_proj.preprocessing.preprocess import order_centers, msm_centers_from_marker_centers
-
+from calib_proj.video_generator.generate_video import load_seq_info_json
 
 # random seed
 np.random.seed(3)
@@ -23,9 +24,11 @@ np.random.seed(3)
 # PATHS
 images_parent_folder = str(Path(r"C:\Users\timfl\Documents\test_calibProj\aruco_4X4_50"))
 intrinsics_folder = Path(r"C:\Users\timfl\Documents\test_calibProj\intrinsics")
-sequence_info_path = str(Path(r"C:\Users\timfl\Documents\Master Thesis\Final_XP\Projection_sequences\100_shifts\videos\apriltag\tag25h9\seq_info.pkl"))
+# sequence_info_path = str(Path(r"C:\Users\timfl\Documents\Master Thesis\Final_XP\Projection_sequences\100_shifts\videos\apriltag\tag25h9\seq_info.pkl"))
+sequence_info_path = Path(r"video/seq_info.json")
 
-seq_info = load_from_pickle(sequence_info_path)
+# seq_info = load_from_pickle(sequence_info_path)
+seq_info = load_seq_info_json(sequence_info_path)
 
 # PRE-PROCESSING PARAMETERS
 show_detection_images = False
@@ -33,23 +36,29 @@ save_detection_images = False
 
 # CALIBRATION PARAMETERS
 external_calibrator_config = ExternalCalibratorConfig(
-    SOLVING_LEVEL=SolvingLevel.FREE,
-    reprojection_error_threshold = 0.7,
+    SOLVING_LEVEL=SolvingLevel.PLANARITY,
+    reprojection_error_threshold = 1,
     ba_least_square_ftol = 1e-6, # Non linear Least-Squares 
     camera_score_threshold = 200,
-    display=1, 
-    display_reprojection_errors=0
+    verbose = 1, # 0: only final report, 1: only camera name when added, 2: full verbose
+    least_squares_verbose = 0, # 0: silent, 1: report only final results, 2: report every iteration
 )
 out_folder_calib = Path("results")
 show_viz = 1
-save_viz = 1
+save_viz = 0
 save_eval_metrics_to_json = 1
+save_scene = 0
+save_final_correspondences = 0
 
 
 
 ###################### PRE-PROCESSING: MSMs DETECTION ###########################
 centers_unordered_path = out_folder_calib / "preprocessing" / "centers_unordered.pkl"
-# centers_unordered = detect_marker_centers(images_parent_folder, intrinsics_folder, marker_system=MarkerSystems.ARUCO, show_detections=show_detection_images)
+# centers_unordered = detect_marker_centers(images_parent_folder, 
+                                        #   intrinsics_folder, 
+                                        #   marker_system=seq_info['marker_system'], 
+                                        #   inverted_projections=seq_info['invert_colors'], 
+                                        #   show_detections=show_detection_images)
 # save_to_pickle(centers_unordered_path, centers_unordered)
 centers_unordered = load_from_pickle(centers_unordered_path)
 
@@ -64,13 +73,11 @@ out_folder_calib.mkdir(parents=True, exist_ok=True)
 intrinsics = construct_cameras_intrinsics(images_parent_folder, intrinsics_folder)
 correspondences = convert_to_correspondences(msm_centers)
 
-cameras = ['gopro4', 'gopro1', 'zoom']
-correspondences = {camera: correspondences[camera] for camera in cameras}
+# cameras = ['gopro4', 'gopro1']
+# correspondences = {camera: correspondences[camera] for camera in cameras}
 
-external_calibrator = ExternalCalibrator2(correspondences=correspondences, 
+external_calibrator = ExternalCalibrator(correspondences=correspondences, 
                                         intrinsics=intrinsics, 
-                                        # min_track_length=min_track_length, 
-                                        points_I0=None,
                                         config=external_calibrator_config
                                         )
 
@@ -86,13 +93,16 @@ if success:
     # Save files
     generic_scene.save_cameras_poses_to_json(out_folder_calib / "camera_poses.json")
     print("camera poses saved to", out_folder_calib / "camera_poses.json")
-    scene_estimate_file = out_folder_calib / "scene_estimate.pkl"
-    save_to_pickle(scene_estimate_file, generic_scene)
-    print("scene estimate saved to", scene_estimate_file)
-    correspondences_file = out_folder_calib / "correspondences.pkl"
-    save_to_pickle(correspondences_file, generic_obsv)
-    print("correspondences saved to", correspondences_file)
-    # metrics = eval_generic_scene(generic_scene, generic_obsv, camera_groups=None, save_to_json=save_eval_metrics_to_json, output_path=out_folder_calib / "metrics.json", print_ = True)
+
+    if save_scene:
+        scene_estimate_file = out_folder_calib / "scene_estimate.pkl"
+        save_to_pickle(scene_estimate_file, generic_scene)
+        print("scene estimate saved to", scene_estimate_file)
+    if save_final_correspondences:
+        correspondences_file = out_folder_calib / "correspondences.pkl"
+        save_to_pickle(correspondences_file, generic_obsv)
+        print("correspondences saved to", correspondences_file)
+    metrics = eval_generic_scene(generic_scene, generic_obsv, camera_groups=None, save_to_json=save_eval_metrics_to_json, output_path=out_folder_calib / "metrics.json", print_ = True)
     print("")
 
     # Visualization

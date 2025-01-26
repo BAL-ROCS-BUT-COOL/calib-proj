@@ -5,7 +5,6 @@ from enum import Enum
 class SolvingLevel(Enum): 
     FREE = 0
     PLANARITY = 1
-    HOMOGRAPHY = 2
 
 
 @dataclass
@@ -15,5 +14,5 @@ class ExternalCalibratorConfig:
     reprojection_error_threshold: float = 1
     camera_score_threshold: float = 200
     ba_least_square_ftol: float = 1e-8
-    display: bool = False
-    display_reprojection_errors: bool = False
+    verbose: int = 1
+    least_squares_verbose: int = 1

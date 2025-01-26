@@ -12,9 +12,9 @@ from calib_proj.preprocessing.marker_systems import detect_aruco_markers, detect
 
 
 
-class MarkerSystems(Enum): 
-    ARUCO = "aruco"
-    APRILTAG = "apriltag"
+# class MarkerSystems(Enum): 
+#     ARUCO = "aruco"
+#     APRILTAG = "apriltag"
 
 
 def intersection_diagonales(points):
@@ -52,18 +52,21 @@ def detect_marker_centers(images_parent_folder,
                    show_detections = False
                    ): 
     
-    if marker_system not in MarkerSystems:
-        raise ValueError(f"Unknown marker system: {marker_system}.")
+    # if marker_system not in MarkerSystems:
+    #     raise ValueError(f"Unknown marker system: {marker_system}.")
     
+    marker_system_name, *rest = marker_system.split('_', 1)
+    dict = rest[0] 
+
     centers = {}
 
-    if marker_system == "apriltag":
+    if marker_system_name == "apriltag":
         
         os.add_dll_directory("C:/Users/timfl/miniconda3/envs/master_thesis/Lib/site-packages/pupil_apriltags/lib")
         os.add_dll_directory("C:/Program Files/MATLAB/R2023b/bin/win64")
 
         at_detector = Detector(
-                    families='tag25h9', # tag16h5, tag25h9,tag36h11
+                    families=dict, # tag16h5, tag25h9,tag36h11
                     nthreads=1,
                     quad_decimate=1.0,
                     quad_sigma=0.0,
@@ -95,10 +98,10 @@ def detect_marker_centers(images_parent_folder,
             if inverted_projections: 
                 img = cv.bitwise_not(img)
             
-            if marker_system == MarkerSystems.ARUCO:
-                dictionary = cv.aruco.getPredefinedDictionary(cv.aruco.DICT_4X4_50)
-                markers, img_draw = detect_aruco_markers(img, dictionary, show_draw_img=show_detections, add_half_pixel_shift=False)
-            elif marker_system == MarkerSystems.APRILTAG:
+            if marker_system_name == 'aruco':
+                # dictionary = cv.aruco.getPredefinedDictionary(cv.aruco.DICT_4X4_50)
+                markers, img_draw = detect_aruco_markers(img, dict, show_draw_img=show_detections, add_half_pixel_shift=False)
+            elif marker_system_name == 'apriltag':
                 markers, img_draw = detect_apriltag_markers_detector(img, at_detector, show_draw_img=show_detections)
 
             for marker_id, _4corners in markers.items():

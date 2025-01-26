@@ -3,8 +3,6 @@ import numpy as np
 
 from calib_commons.camera import Camera
 from calib_commons.objectPoint import ObjectPoint
-from calib_commons.observation import Observation
-from calib_commons.intrinsics import Intrinsics
 from calib_commons.scene import SceneType
 from calib_commons.types import idtype
 

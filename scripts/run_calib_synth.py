@@ -10,53 +10,27 @@ from calib_commons.intrinsics import Intrinsics
 from calib_commons.utils.se3 import SE3
 from calib_commons.viz import visualization as generic_vizualization
 
-from calib_proj.utils.sceneGenerator import SceneGenerator
+from calib_proj.utils.scene_generator import SceneGenerator
 from calib_proj.utils import visualization
-from calib_proj.core.externalCalibrator2 import ExternalCalibrator2, WorldFrame, SolvingLevel
+from calib_proj.core.external_calibrator import ExternalCalibrator, WorldFrame, SolvingLevel
 from calib_proj.core.config import ExternalCalibratorConfig, SolvingLevel
 
 
 
 def create_cameras(n_cameras):
     cameras = {}
+    d_far = 4
+    tilt_far = 45*np.pi/180
     K_gopro = np.array([[917, 0, 1920/2], 
                       [0, 917, 1080/2], 
                       [0, 0, 1]])
     intrinsics_gopro = Intrinsics(K_gopro, (1920, 1080))
-
-    n_far = 4
-    d_far = 1
-    tilt_far = 45*np.pi/180
-  
     point_to_look_at = np.zeros(3)
-    poses = generateCircularCameras(point_to_look_at, d_far, tilt_far, n_far)
-    # for i in range(len(poses)):            
-    pose = poses[1]
-    id = 'A'
-    cameras[id] = Camera(id, SE3(pose), intrinsics_gopro) 
-
-
-    n_far = 4
-    d_far = 3.5
-    tilt_far = 45*np.pi/180
-  
-    point_to_look_at = np.zeros(3)
-    poses = generateCircularCameras(point_to_look_at, d_far, tilt_far, n_far)
-    pose = poses[2]
-    id = 'B'
-    cameras[id] = Camera(id, SE3(pose), intrinsics_gopro) 
-
-    
-    n_far = 4
-    d_far = 7
-    tilt_far = 45*np.pi/180
-  
-    point_to_look_at = np.zeros(3)
-    poses = generateCircularCameras(point_to_look_at, d_far, tilt_far, n_far)
-    pose = poses[3]
-    id = 'C' 
-    cameras[id] = Camera(id, SE3(pose), intrinsics_gopro) 
-
+    poses = generateCircularCameras(point_to_look_at, d_far, tilt_far, n_cameras)
+    for i in range(len(poses)):            
+        pose = poses[i]
+        id = i
+        cameras[id] = Camera(id, SE3(pose), intrinsics_gopro) 
     return cameras
 
 # random seed
@@ -77,13 +51,16 @@ external_calibrator_config = ExternalCalibratorConfig(
     reprojection_error_threshold = 1,
     ba_least_square_ftol = 1e-6, # Non linear Least-Squares 
     camera_score_threshold = 200,
-    display=1, 
-    display_reprojection_errors=0
+    verbose = 1, # 0: only final report, 1: only camera name when added, 2: full verbose
+    least_squares_verbose = 0, # 0: silent, 1: report only final results, 2: report every iteration
 )
 out_folder_calib = Path("results")
 show_viz = 1
 save_viz = 0
-save_eval_metrics_to_json = 1
+save_poses = 0
+save_eval_metrics_to_json = 0
+save_scene = 0
+save_final_correspondences = 0
 
 
 
@@ -99,15 +76,10 @@ synthetic_scene, points_I0 = scene_generator.generate_scene(world_frame=None)
 correspondences = synthetic_scene.generic_scene.get_correspondences()
 intrinsics = synthetic_scene.generic_scene.get_intrinsics()
 
-visualization.visualize_scenes(synthetic_scene, show_ids=False, show_fig=show_viz, save_fig=False)
-
-
 ###################### EXTERNAL CALIBRATION ###########################
 out_folder_calib.mkdir(parents=True, exist_ok=True)
-external_calibrator = ExternalCalibrator2(correspondences=correspondences, 
+external_calibrator = ExternalCalibrator(correspondences=correspondences, 
                                         intrinsics=intrinsics, 
-                                        # min_track_length=min_track_length, 
-                                        points_I0=points_I0,
                                         config=external_calibrator_config
                                         )
 
@@ -120,15 +92,18 @@ generic_scene.print_cameras_poses()
 
 
 # Save files
-generic_scene.save_cameras_poses_to_json(out_folder_calib / "camera_poses.json")
-print("camera poses saved to", out_folder_calib / "camera_poses.json")
-scene_estimate_file = out_folder_calib / "scene_estimate.pkl"
-save_to_pickle(scene_estimate_file, generic_scene)
-print("scene estimate saved to", scene_estimate_file)
-correspondences_file = out_folder_calib / "correspondences.pkl"
-save_to_pickle(correspondences_file, generic_obsv)
-print("correspondences saved to", correspondences_file)
-# metrics = eval_generic_scene(generic_scene, generic_obsv, camera_groups=None, save_to_json=save_eval_metrics_to_json, output_path=out_folder_calib / "metrics.json", print_ = True)
+if save_poses:
+    generic_scene.save_cameras_poses_to_json(out_folder_calib / "camera_poses.json")
+    print("camera poses saved to", out_folder_calib / "camera_poses.json")
+if save_scene:
+    scene_estimate_file = out_folder_calib / "scene_estimate.pkl"
+    save_to_pickle(scene_estimate_file, generic_scene)
+    print("scene estimate saved to", scene_estimate_file)
+if save_final_correspondences:
+    correspondences_file = out_folder_calib / "correspondences.pkl"
+    save_to_pickle(correspondences_file, generic_obsv)
+    print("correspondences saved to", correspondences_file)
+metrics = eval_generic_scene(generic_scene, generic_obsv, camera_groups=None, save_to_json=save_eval_metrics_to_json, output_path=out_folder_calib / "metrics.json", print_ = True)
 print("")
 
 # Visualization

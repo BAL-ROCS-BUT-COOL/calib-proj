@@ -15,7 +15,7 @@ import calib_commons.utils.se3 as se3
 from calib_commons.utils.se3 import SE3
 from calib_commons.utils.so3 import *
 from calib_commons.types import idtype
-from calib_proj.utils.utils import K_from_params
+from calib_commons.utils.utils import K_from_params
 
 class SceneGenerator: 
 

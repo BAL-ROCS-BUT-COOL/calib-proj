@@ -1,6 +1,6 @@
 import os
-os.add_dll_directory("C:/Users/timfl/miniconda3/envs/master_thesis/Lib/site-packages/pupil_apriltags/lib")
-os.add_dll_directory("C:/Program Files/MATLAB/R2023b/bin/win64")
+# os.add_dll_directory("C:/Users/timfl/miniconda3/envs/master_thesis/Lib/site-packages/pupil_apriltags/lib")
+# os.add_dll_directory("C:/Program Files/MATLAB/R2023b/bin/win64")
 from pupil_apriltags import Detector
 import cv2
 import numpy as np
@@ -9,9 +9,14 @@ from pathlib import Path
 
 
 
+ARUCO_DICTIONARIES = {'4X4_50': cv2.aruco.getPredefinedDictionary(cv2.aruco.DICT_4X4_50),
+                        '4X4_100': cv2.aruco.getPredefinedDictionary(cv2.aruco.DICT_4X4_100),
+                        '5X5_50': cv2.aruco.getPredefinedDictionary(cv2.aruco.DICT_5X5_50),
+                        '6X6_50': cv2.aruco.getPredefinedDictionary(cv2.aruco.DICT_6X6_50),
+                        '7X7_50': cv2.aruco.getPredefinedDictionary(cv2.aruco.DICT_7X7_50)}
 
 def detect_aruco_markers(image, 
-                         dictionary: cv2.aruco_Dictionary, 
+                         dictionary: str, 
                          parameters: cv2.aruco_DetectorParameters = None, 
                          draw: bool = True, 
                          show_draw_img: bool = False,
@@ -43,7 +48,7 @@ def detect_aruco_markers(image,
         # parameters.minMarkerPerimeterRate = 0.01
         # parameters.maxMarkerPerimeterRate = 4.0
 
-    detector = cv2.aruco.ArucoDetector(dictionary, parameters)
+    detector = cv2.aruco.ArucoDetector(ARUCO_DICTIONARIES[dictionary], parameters)
 
     corners, ids, rejected = detector.detectMarkers(gray)
 

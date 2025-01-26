@@ -5,7 +5,7 @@ def order_centers(centers, seq_info):
     for cam in centers:
         ordered_centers[cam] = {}  
         for proj_idx in centers[cam]:
-            shift_idx, scale_idx = seq_info['shift_scale_indices'][proj_idx] 
+            shift_idx, scale_idx = seq_info['shift_scale_indices'][str(proj_idx)] 
             if shift_idx not in ordered_centers[cam].keys():
                 ordered_centers[cam][shift_idx] = {}
 
