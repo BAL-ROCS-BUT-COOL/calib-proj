@@ -3,6 +3,7 @@ from typing import List
 import cv2
 import os
 from tqdm import tqdm
+from PIL import Image
 
 from calib_proj.video_generator.marker_generator.aruco_generator import generate_aruco_markers
 from calib_proj.video_generator.generate_grid import generate_grid
@@ -21,7 +22,7 @@ def load_seq_info_json(seq_path):
 
 def generate_video(msm_base_size: int, 
                    msm_scales: List[int],
-                   n_shifts: int, 
+                   n_grids: int, 
                    projector_resolution: tuple[int, int], 
                    grid_size: tuple[int, int], 
                    marker_system: str = 'aruco_4X4_50', 
@@ -35,23 +36,15 @@ def generate_video(msm_base_size: int,
     
     msm_sizes = [msm_base_size * scale for scale in msm_scales]
     
-
-    s_w = projector_resolution[0] / (grid_size[1]+1)
-    s_h = projector_resolution[1] / (grid_size[0]+1)
-    s = int(min(s_h, s_w))
-  
-    shift_range_x = s/2
-    shift_range_y = s/2
-
-    shifts = [(int(shift_x), int(shift_y)) 
-              for shift_x in np.linspace(-shift_range_x, shift_range_x, n_shifts) 
-              for shift_y in np.linspace(-shift_range_y, shift_range_y, n_shifts)]
+    grids_coords = generate_grid(projector_resolution=projector_resolution,
+                  margin=10,
+                  grid_size=grid_size,
+                  n_grids=n_grids)
     
+    # # tmp_folder = video_folder + "\\tmp"
+    # # marker_folder = tmp_folder + "\\" + marker_system
+
     ids = range(grid_size[0] * grid_size[1])
-
-    # tmp_folder = video_folder + "\\tmp"
-    # marker_folder = tmp_folder + "\\" + marker_system
-
 
     seq_info = {'marker_system': marker_system,
                 'grid_size': grid_size,
@@ -86,19 +79,28 @@ def generate_video(msm_base_size: int,
 
 
     grid_idx = 1
-    for shift_idx, shift in tqdm(enumerate(shifts), total=len(shifts), desc="Generating video frames"):
+    for shift_idx, grid_coords in tqdm(grids_coords.items(), total=len(grids_coords), desc="Generating video frames"):
         for scale_idx, scale in enumerate(msm_scales):
             seq_info['shift_scale_indices'][grid_idx] = (shift_idx, scale_idx+1)
-
             marker_size = msm_base_size * scale
-            # base_folder_path = os.path.join(marker_folder, str(marker_size))
-            grid_img, _ = generate_grid(grid_size=grid_size, 
-                                        size_in_out_image=marker_size, 
-                                        margin_min=0, 
-                                        out_image_res=projector_resolution,
-                                        shift=shift, 
-                                        markers=markers)
-            grid_img = cv2.cvtColor(np.array(grid_img), cv2.COLOR_RGB2BGR)
+
+            cols, rows = grid_size
+            grid_image = Image.new('RGB', projector_resolution, (255, 255, 255))
+            id = 0
+            for row in range(rows): 
+                for col in range(cols): 
+                    marker_np = markers[marker_size][id]
+                    marker = Image.fromarray(cv2.cvtColor(marker_np, cv2.COLOR_GRAY2RGB))
+                    center = grid_coords[id]
+                    top_left = (round(center[0] - marker_size / 2), round(center[1] - marker_size / 2))
+                    grid_image.paste(marker, top_left)
+                    id += 1
+            grid_img = cv2.cvtColor(np.array(grid_image), cv2.COLOR_RGB2BGR)
+
+            # cv2.imshow('Grid Image', grid_img)
+            # cv2.waitKey(0)
+            # cv2.destroyAllWindows()
+
             if invert_colors:
                 grid_img = 255 - grid_img
             video_writer.write(grid_img)
