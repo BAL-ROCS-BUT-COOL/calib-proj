@@ -46,6 +46,9 @@ save_eval_metrics_to_json = True
 save_scene = False
 save_final_correspondences = False
 
+############################### END USER INTERFACE ####################################
+
+
 
 
 ###################### PRE-PROCESSING: MSMs DETECTION ###########################

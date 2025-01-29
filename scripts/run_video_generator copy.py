@@ -1,4 +1,4 @@
-from calib_proj.video_generator.generate_video import generate_video
+from calib_proj.video_generator.generate_video_new import generate_video
 
 
 ################# Parameters ###################
