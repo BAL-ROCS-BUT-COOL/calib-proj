@@ -40,12 +40,13 @@ def extract_frames(videos_folder, sequence_info_path, start_end_frames, out_fold
 
 
 
+
         video_folder_path = out_folder_path / cam_name
         video_folder_path.mkdir(parents=True, exist_ok=True)
 
         video_capture = cv2.VideoCapture(str(video_path))
-        video_capture.set(cv2.CAP_PROP_POS_FRAMES, start_frame)
-        frame_idx = start_frame
+        # video_capture.set(cv2.CAP_PROP_POS_FRAMES, start_frame)
+        frame_idx = 0
 
 
         while video_capture.isOpened():

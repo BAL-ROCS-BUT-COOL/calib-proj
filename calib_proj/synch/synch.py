@@ -61,16 +61,16 @@ def synch(video_folder, sequence_info_path, threshold=0.6):
         # plot_sequence(received_signal)
         for seq_name, synch_sequence in synch_sequences.items():
             # print(f"Detecting sequence {seq_name}...")
-            detected_index = detect_sync_sequence(received_signal, synch_sequence, seq_fps, cameras_fps[cam_name], threshold, plot=0)
+            detected_index, mes_length = detect_sync_sequence(received_signal, synch_sequence, seq_fps, cameras_fps[cam_name], threshold, plot=0)
             # plt.show()
-
+            print(f"Sequence {seq_name} detected at index {detected_index}.")
             if detected_index is not None:
                 if seq_name == 'start':
-                    start_end_frames[cam_name][seq_name] = detected_index + len(synch_sequence)
+                    start_end_frames[cam_name][seq_name] = detected_index + mes_length
                     # print(f"Sequence {seq_name} start at index {detected_index + len(synch_sequence)}.")
                     print(f"Sequence start signal detected.")
                 elif seq_name == 'end':
-                    start_end_frames[cam_name][seq_name] = detected_index - 1
+                    start_end_frames[cam_name][seq_name] = detected_index 
                     print(f"Sequence end signal detected.")
 
                     # print(f"Sequence {seq_name} end at index {detected_index}.")
@@ -93,7 +93,7 @@ def synch(video_folder, sequence_info_path, threshold=0.6):
     # else:
     #     start_end_frames = {}
     # print("Start and end frames:")
-    # print(start_end_frames)
+    print(start_end_frames)
 
     # Remove entries with None values
     cam_names_with_missing_frames = [
