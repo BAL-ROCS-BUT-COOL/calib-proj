@@ -46,7 +46,7 @@ def synch(video_folder, sequence_info_path, threshold=0.6):
             videos_path[video_file.split('.')[0]] = video_path
 
     cameras_fps = {cam_name: cv2.VideoCapture(video_path).get(cv2.CAP_PROP_FPS) for cam_name, video_path in videos_path.items()}
-    print(f"Cameras FPS: {cameras_fps}")
+    # print(f"Cameras FPS: {cameras_fps}")
 
     
     start_end_frames = {}
@@ -63,7 +63,7 @@ def synch(video_folder, sequence_info_path, threshold=0.6):
             # print(f"Detecting sequence {seq_name}...")
             detected_index, mes_length = detect_sync_sequence(received_signal, synch_sequence, seq_fps, cameras_fps[cam_name], threshold, plot=0)
             # plt.show()
-            print(f"Sequence {seq_name} detected at index {detected_index}.")
+            # print(f"Sequence {seq_name} detected at index {detected_index}.")
             if detected_index is not None:
                 if seq_name == 'start':
                     start_end_frames[cam_name][seq_name] = detected_index + mes_length
@@ -93,7 +93,7 @@ def synch(video_folder, sequence_info_path, threshold=0.6):
     # else:
     #     start_end_frames = {}
     # print("Start and end frames:")
-    print(start_end_frames)
+    # print(start_end_frames)
 
     # Remove entries with None values
     cam_names_with_missing_frames = [
