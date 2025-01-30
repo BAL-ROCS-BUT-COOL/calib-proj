@@ -7,6 +7,7 @@ from PIL import Image
 
 from calib_proj.video_generator.marker_generator.aruco_generator import generate_aruco_markers
 from calib_proj.video_generator.generate_grid import generate_grid
+from calib_proj.synch.seq_generator import generate_sequences
 
 
 def save_seq_info_json(seq_info, seq_path): 
@@ -28,8 +29,10 @@ def generate_video(msm_base_size: int,
                    marker_system: str = 'aruco_4X4_50', 
                    video_folder: str = 'video', 
                    grid_fps: int = 10, 
+                   video_fps: int = 30,
                    white_duration: int = 1, 
-                   invert_colors: bool = True):
+                   invert_colors: bool = True, 
+                   synch_seq_duration = 3):
     
     if not os.path.exists(video_folder):
         os.makedirs(video_folder)
@@ -49,6 +52,7 @@ def generate_video(msm_base_size: int,
     seq_info = {'marker_system': marker_system,
                 'grid_size': grid_size,
                 'grid_fps': grid_fps,
+                'video_fps': video_fps,
                 'msm_base_size': msm_base_size,
                 'msm_scales': msm_scales,
                 'invert_colors': invert_colors,
@@ -66,17 +70,26 @@ def generate_video(msm_base_size: int,
     # generate video
     fourcc = cv2.VideoWriter_fourcc(*'mp4v')
     video_path = os.path.join(video_folder, 'video.mp4')
-    video_writer = cv2.VideoWriter(video_path, fourcc, grid_fps, projector_resolution)
+    video_writer = cv2.VideoWriter(video_path, fourcc, video_fps, projector_resolution)
 
     # Add white image at the beginning of the video
     white_frame = np.ones((projector_resolution[1], projector_resolution[0], 3), dtype=np.uint8) 
     white_frame[:,:,0] = 0
     white_frame[:,:,1] = 0
     white_frame[:,:,2] = 255
-    white_frame_count = int(grid_fps * white_duration)
+    white_frame_count = int(video_fps * white_duration)
     for _ in range(white_frame_count):
         video_writer.write(white_frame)
 
+    synch_sequences = generate_sequences(seq_duration=synch_seq_duration, seq_fps=10, proj_fps=video_fps)
+    seq_info['synch_sequences'] = synch_sequences
+    
+    for value in synch_sequences['start']:
+        intensity = 255 if value == 1 else 0
+        image_array = np.full((projector_resolution[1], projector_resolution[0], 3), intensity, dtype=np.uint8)
+        video_writer.write(image_array)
+
+    repeat_grid_factor = video_fps // grid_fps
 
     grid_idx = 1
     for shift_idx, grid_coords in tqdm(grids_coords.items(), total=len(grids_coords), desc="Generating video frames"):
@@ -103,14 +116,23 @@ def generate_video(msm_base_size: int,
 
             if invert_colors:
                 grid_img = 255 - grid_img
-            video_writer.write(grid_img)
+
+            for _ in range(repeat_grid_factor):
+                video_writer.write(grid_img)
             
             grid_idx += 1
 
+    for value in synch_sequences['end']:
+        intensity = 255 if value == 1 else 0
+        image_array = np.full((projector_resolution[1], projector_resolution[0], 3), intensity, dtype=np.uint8)
+        video_writer.write(image_array)
+
     # Add white image at the end of the video
-    white_frame_count = int(grid_fps * white_duration)
+    white_frame_count = int(video_fps * white_duration)
     for _ in range(white_frame_count):
         video_writer.write(white_frame)
+
+
 
     seq_info_path = os.path.join(video_folder, 'seq_info.json')
     save_seq_info_json(seq_info, seq_info_path)

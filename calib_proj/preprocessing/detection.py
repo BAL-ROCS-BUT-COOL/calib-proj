@@ -52,6 +52,9 @@ def detect_marker_centers(images_parent_folder,
                    show_detections = False
                    ): 
     
+    print(f"\nDetecting markers started...")
+
+    
     # if marker_system not in MarkerSystems:
     #     raise ValueError(f"Unknown marker system: {marker_system}.")
     
@@ -78,17 +81,17 @@ def detect_marker_centers(images_parent_folder,
     image_folders = {cam: os.path.join(images_parent_folder, cam) for cam in os.listdir(images_parent_folder) if os.path.isdir(os.path.join(images_parent_folder, cam))}
     intrinsics_paths = {cam: os.path.join(intrinsics_folder, cam + "_intrinsics.json") for cam in image_folders}    
 
-    for cam, image_folder in tqdm(image_folders.items(), desc=f"Processing cameras", total=len(image_folders), leave=False): 
+    for cam, image_folder in tqdm(image_folders.items(), desc=f"Markers detection", total=len(image_folders), leave=False): 
         centers[cam] = {}
 
         camera_matrix, distortion_coeffs = load_intrinsics(intrinsics_paths[cam])
         
         files = os.listdir(image_folder)
         files = [f for f in files if f.endswith(('.png', '.jpg', '.jpeg'))]
-        files.sort(key=lambda x: int(x.split('_')[0]))
+        files.sort(key=lambda x: int(x.split('.')[0]))
         
-        for filename in tqdm(files, desc=f"Processing camera {cam}", total=len(files), leave=False):        
-            k = int(filename.split('_')[0])
+        for filename in tqdm(files, desc=f"Processing {cam} ...", total=len(files), leave=False):        
+            k = int(filename.split('.')[0])
             centers[cam][k] = {}
 
             file_path = os.path.join(image_folder, filename)
@@ -112,5 +115,5 @@ def detect_marker_centers(images_parent_folder,
                     center = intersection_diagonales(corners_undistorted)
                     centers[cam][k][marker_id] = center
 
-            
+    print(f"Detected markers successfully.")
     return centers

@@ -1,5 +1,5 @@
 import matplotlib.pyplot as plt
-import numpy as np 
+import numpy as np
 from pathlib import Path
 
 from calib_commons.data.load_calib import construct_cameras_intrinsics
@@ -15,16 +15,17 @@ from calib_proj.utils.data import convert_to_correspondences
 from calib_proj.preprocessing.detection import detect_marker_centers
 from calib_proj.preprocessing.preprocess import order_centers, msm_centers_from_marker_centers
 from calib_proj.video_generator.generate_video import load_seq_info_json
+from calib_proj.synch.synch import synch
+from calib_proj.synch.extract_frames import extract_frames
 
 # random seed
 np.random.seed(3)
 
 ############################### USER INTERFACE ####################################
-
 # PATHS
-images_parent_folder = str(Path(r"C:\Users\timfl\Documents\test_calibProj\aruco_4X4_50"))
-intrinsics_folder = Path(r"C:\Users\timfl\Documents\test_calibProj\intrinsics")
-sequence_info_path = Path(r"video/seq_info.json")
+videos_folder = Path(r"C:\Users\timfl\Documents\test_calibProj\video")
+intrinsics_folder = Path(r"C:\Users\timfl\Documents\test_calibProj\intrinsics_tim\calibrate_intrinsics_output\camera_intrinsics")
+sequence_info_path = Path(r"video\seq_info.json")
 
 # PRE-PROCESSING PARAMETERS
 show_detection_images = False
@@ -32,9 +33,9 @@ save_detection_images = False
 
 # CALIBRATION PARAMETERS
 external_calibrator_config = ExternalCalibratorConfig(
-    SOLVING_LEVEL=SolvingLevel.PLANARITY,
+    SOLVING_LEVEL=SolvingLevel.FREE,
     reprojection_error_threshold = 1,
-    ba_least_square_ftol = 1e-6, # Non linear Least-Squares 
+    ba_least_square_ftol = 1e-6, # Non linear Least-Squares
     camera_score_threshold = 200,
     verbose = 1, # 0: only final report, 1: only camera name when added, 2: full verbose
     least_squares_verbose = 0, # 0: silent, 1: report only final results, 2: report every iteration
@@ -51,13 +52,21 @@ save_final_correspondences = False
 
 
 
+
+###################### TEMPORAL SYNCHRONIZATION ###########################
+start_end_frames = synch(videos_folder, sequence_info_path, threshold=0.6)
+images_parent_folder = Path(videos_folder) / "frames"
+
+###################### FRAMES EXTRACTION ###########################
+extract_frames(videos_folder, sequence_info_path, start_end_frames, images_parent_folder)
+
 ###################### PRE-PROCESSING: MSMs DETECTION ###########################
 seq_info = load_seq_info_json(sequence_info_path)
 centers_unordered_path = out_folder_calib / "preprocessing" / "centers_unordered.pkl"
-centers_unordered = detect_marker_centers(images_parent_folder, 
-                                          intrinsics_folder, 
-                                          marker_system=seq_info['marker_system'], 
-                                          inverted_projections=seq_info['invert_colors'], 
+centers_unordered = detect_marker_centers(images_parent_folder,
+                                          intrinsics_folder,
+                                          marker_system=seq_info['marker_system'],
+                                          inverted_projections=seq_info['invert_colors'],
                                           show_detections=show_detection_images)
 # save_to_pickle(centers_unordered_path, centers_unordered)
 # centers_unordered = load_from_pickle(centers_unordered_path)
@@ -70,11 +79,11 @@ msm_centers = msm_centers_from_marker_centers(centers_ordered)
 out_folder_calib.mkdir(parents=True, exist_ok=True)
 intrinsics = construct_cameras_intrinsics(images_parent_folder, intrinsics_folder)
 correspondences = convert_to_correspondences(msm_centers)
-external_calibrator = ExternalCalibrator(correspondences=correspondences, 
-                                        intrinsics=intrinsics, 
+external_calibrator = ExternalCalibrator(correspondences=correspondences,
+                                        intrinsics=intrinsics,
                                         config=external_calibrator_config
                                         )
-
+print(f"\nCalibration started...")
 success = external_calibrator.calibrate()
 if success:
     scene_proj_estimate = external_calibrator.get_scene(world_frame=WorldFrame.CAM_FIRST_CHOOSEN)
@@ -111,10 +120,10 @@ if success:
         if save_viz:
             print("2d visualization saved to", save_path)
         save_path = out_folder_calib / "2d_errors.png"
-        generic_vizualization.plot_reprojection_errors(scene_estimate=generic_scene, 
-                                            observations=generic_obsv, 
+        generic_vizualization.plot_reprojection_errors(scene_estimate=generic_scene,
+                                            observations=generic_obsv,
                                             show_fig=show_viz,
-                                            save_fig=save_viz, 
+                                            save_fig=save_viz,
                                             save_path=save_path)
         if save_viz:
             print("2d errors visualization saved to", save_path)

@@ -3,7 +3,7 @@ from calib_proj.video_generator.generate_grid import generate_grid
 
 ################# Parameters ###################
 msm_base_size = 18 # [px] must be a multiple of the original size of the dictionary (6 px)
-msm_scales = [1,3,5,7]  # scales of the MSMs
+msm_scales = [5,7]  # scales of the MSMs
 n_grids = 100 # number of MSMs grids
 grid_fps = 10 # number of MSMs grids projected per second
 
