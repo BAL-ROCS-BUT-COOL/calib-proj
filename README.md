@@ -63,9 +63,88 @@ To generate a projection sequence in **.mp4** format, run the script `scripts/ru
 ```bash
    python scripts/run_video_generator.py
 ```
-By default this will create a video of 40s containing 3200 multi-scale markers (MSMs) with 4 scales at 10 fps (each MSM has an exposition time of 100 ms). 
-
-The video will be saved in `video/video.mp4` and a file containing data about the sequence is saved in `video/seq_info.json`.
+By default this will create a video of 40s containing 3200 multi-scale markers (MSMs) with 4 scales.
 
 
-### 2. Calibration
+The video will be saved in `video/video.mp4` and a file containing metadata about the sequence is saved in `video/seq_info.json`.
+
+
+### 2. Acquisition 
+
+Monter le projecteur sur le plafond et lancer la sequence de projection. 
+
+
+### 3. Calibration 
+To run the calibration system, modify the parameters in the user interface of the script `scripts/run.py`. 
+
+In particular, 
+
+videos_folder must be the path to the folder containing the cameras recordings as follows:
+
+```plaintext
+videos_folder/
+├── camera1.mp4
+├── camera2.mp4
+└── ...
+```
+intrinsics_folder must be the path to the folder containing the cameras intrinsics as follows:
+
+
+```plaintext
+intrinsics_folder/
+├── camera1_intrinsics.json
+├── camera2_intrinsics.json
+└── ...
+```
+
+>💡 This can be done using using the ['calibrate-intrinsics'](https://github.com/tflueckiger/calib-commons?tab=readme-ov-file#calibrate-intrinsics) tool of the [`calib-commons`](https://github.com/tflueckiger/calib-commons) toolbox.
+
+
+To start the calibration:
+
+```bash
+   python scripts/run.py
+```
+
+The will run the 4 steps: 
+- temporal synchronization 
+- frames extraction 
+- MSMs detection 
+- calibration 
+
+
+### 4. Output 📤
+The camera poses 📐are saved in ***results/camera_poses.json***.
+
+In addition, the following **metrics** 🎯, per camera and overall, are saved in ***results/metrics.json***: 
+- mean **reprojection error**
+- standard deviation of the reprojection error
+- view score of the cameras for the calibration dataset (score introduced and used by [COLMAP](https://openaccess.thecvf.com/content_cvpr_2016/papers/Schonberger_Structure-From-Motion_Revisited_CVPR_2016_paper.pdf))
+- number of correspondences for each cameras 
+
+> The *number of correspondences* of a camera corresponds to the number of conform observations a camera has of object (=3D) points with a track length higher or equal to 2. 
+
+> The *track* of an object (=3D) point is the set of cameras in which the point is observed, and for which the observation is conform.
+
+
+<figure style="text-align: center;">
+    <img src="https://github.com/user-attachments/assets/1522df68-0d96-481a-b0d7-6efa4e12384f" alt="Texte alternatif" style="width: 50%">
+</figure>
+<
+<figure style="text-align: center;">
+    <img src="https://github.com/user-attachments/assets/85f6f36d-ef0e-48cd-bd1a-62212daf1036" alt="Texte alternatif" style="width: 50%">
+</figure>
+
+---
+
+---
+
+## 📃 **License**
+
+This project is licensed under the **MIT License**. See the [LICENSE](https://github.com/tflueckiger/calib-board/blob/main/LICENSE) file for details.
+
+---
+
+## **Acknowledgments**
+
+TODO

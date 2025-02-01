@@ -25,22 +25,18 @@ np.random.seed(3)
 # PATHS
 videos_folder = Path(r"C:\Users\timfl\Documents\test_calibProj\video")
 intrinsics_folder = Path(r"C:\Users\timfl\Documents\test_calibProj\intrinsics_tim\calibrate_intrinsics_output\camera_intrinsics")
-sequence_info_path = Path(r"video\seq_info.json")
+
+# CALIBRATION PARAMETERS
+external_calibrator_config = ExternalCalibratorConfig(
+    reprojection_error_threshold = 1,
+    camera_score_threshold = 200, 
+    verbose = 1, # 0: only final report, 1: only camera name when added, 2: full verbose
+    least_squares_verbose = 0, # 0: silent, 1: report only final results, 2: report every iteration
+)
 
 # PRE-PROCESSING PARAMETERS
 show_detection_images = False
 save_detection_images = False
-
-# CALIBRATION PARAMETERS
-external_calibrator_config = ExternalCalibratorConfig(
-    SOLVING_LEVEL=SolvingLevel.FREE,
-    reprojection_error_threshold = 1,
-    ba_least_square_ftol = 1e-6, # Non linear Least-Squares
-    camera_score_threshold = 200,
-    verbose = 1, # 0: only final report, 1: only camera name when added, 2: full verbose
-    least_squares_verbose = 0, # 0: silent, 1: report only final results, 2: report every iteration
-)
-out_folder_calib = Path("results")
 show_viz = True
 save_viz = False
 save_eval_metrics_to_json = True
@@ -50,6 +46,9 @@ save_final_correspondences = False
 ############################### END USER INTERFACE ####################################
 
 
+
+out_folder_calib = Path("results")
+sequence_info_path = Path(r"video\seq_info.json")
 
 
 
