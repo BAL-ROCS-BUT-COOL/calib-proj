@@ -5,7 +5,8 @@
 ![Image](https://github.com/user-attachments/assets/37ad247e-3380-4082-b493-3d8a585ac817)
 
 ## Automatic Multi-Camera System External Calibration
-A Python package for performing **external calibration** of multi-camera systems via the projection of multi-scale markers (MSMs) from a video projector.
+
+**calib-proj** is the Python implementation of an [automatic external camera calibration for multi-camera systems](https://arxiv.org/abs/2501.16221) that eliminates the need for operator intervention or specialized expertise. The method specifically addresses the problem of limited overlapping fields of view caused by significant variations in optical zoom levels and camera locations via the projection of multi-scale markers (MSMs) using a ceiling-mounted projector. MSMs consist of 2D patterns projected at varying scales, ensuring accurate extraction of well distributed point correspondences across significantly different viewpoints and zoom levels. 
 
 
 
@@ -13,7 +14,6 @@ A Python package for performing **external calibration** of multi-camera systems
 - [Installation](#installation) 
 - [Documentation](#documentation) 
 - [How To Use](#how-to-use) 
-- [How it Works](#how-it-works)
 - [Citation](#citation)
 - [License](#license) 
 - [Acknowledgments](#acknowledgments)
@@ -143,7 +143,6 @@ In addition, the following **metrics** 🎯, per camera and overall, are saved i
 
 ---
 
-## **How It Works**
 
 
 ## **Citation**
