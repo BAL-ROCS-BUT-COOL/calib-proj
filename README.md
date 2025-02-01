@@ -2,7 +2,6 @@
 
 A Python package for performing **external calibration** of multi-camera systems via the projection of multi-scale markers (MSMs) from a video projector.
 
-TODO : METTRE LIEN ARXIV.
 ---
 
 
@@ -12,6 +11,8 @@ TODO : METTRE LIEN ARXIV.
 - [How To Use](#how-to-use) ❔
 - [License](#-license) 📃
 - [Acknowledgments](#)
+
+## **Installation** 🔧
 
 
 ### Dependencies (calib-commons) ⛓️
@@ -71,15 +72,14 @@ The video will be saved in `video/video.mp4` and a file containing metadata abou
 
 ### 2. Acquisition 
 
-Monter le projecteur sur le plafond et lancer la sequence de projection. 
-
+Mount the projector on the ceiling and start the projection sequence.
 
 ### 3. Calibration 
 To run the calibration system, modify the parameters in the user interface of the script `scripts/run.py`. 
 
 In particular, 
 
-videos_folder must be the path to the folder containing the cameras recordings as follows:
+- **videos_folder** must be the path to the folder containing the cameras recordings as follows:
 
 ```plaintext
 videos_folder/
@@ -87,7 +87,7 @@ videos_folder/
 ├── camera2.mp4
 └── ...
 ```
-intrinsics_folder must be the path to the folder containing the cameras intrinsics as follows:
+- **intrinsics_folder** must be the path to the folder containing the cameras intrinsics as follows:
 
 
 ```plaintext
@@ -128,15 +128,36 @@ In addition, the following **metrics** 🎯, per camera and overall, are saved i
 
 
 <figure style="text-align: center;">
-    <img src="https://github.com/user-attachments/assets/1522df68-0d96-481a-b0d7-6efa4e12384f" alt="Texte alternatif" style="width: 50%">
+    <img src="https://github.com/user-attachments/assets/1522df68-0d96-481a-b0d7-6efa4e12384f" alt="Texte alternatif" style="width: 40%">
 </figure>
-<
+
 <figure style="text-align: center;">
-    <img src="https://github.com/user-attachments/assets/85f6f36d-ef0e-48cd-bd1a-62212daf1036" alt="Texte alternatif" style="width: 50%">
+    <img src="https://github.com/user-attachments/assets/85f6f36d-ef0e-48cd-bd1a-62212daf1036" alt="Texte alternatif" style="width: 80%">
 </figure>
 
 ---
 
+## ❔ **How It Works**
+
+
+# Citation
+
+If you find this package useful and use it in your work, please consider citing:
+
+Flückiger, T., Hein, J., Fischer, V., Fürnstahl, P., & Calvet, L. (2025). Automatic Calibration of a Multi-Camera System with Limited Overlapping Fields of View for 3D Surgical Scene Reconstruction. arXiv preprint arXiv:2501.16221. Available at: https://arxiv.org/abs/2501.16221
+
+```bibtex
+@misc{fluckiger2025automatic,
+  title={Automatic Calibration of a Multi-Camera System with Limited Overlapping Fields of View for 3D Surgical Scene Reconstruction},
+  author={Tim Flückiger and Jonas Hein and Valery Fischer and Philipp Fürnstahl and Lilian Calvet},
+  year={2025},
+  eprint={2501.16221},
+  archivePrefix={arXiv},
+  primaryClass={cs.CV},
+  note={Preprint, arXiv:2501.16221},
+  url={https://arxiv.org/abs/2501.16221}
+}
+```
 ---
 
 ## 📃 **License**
@@ -146,5 +167,4 @@ This project is licensed under the **MIT License**. See the [LICENSE](https://gi
 ---
 
 ## **Acknowledgments**
-
-TODO
+This work has been supported by the [OR-X](https://or-x.ch/en/translational-center-for-surgery/) - a swiss national research infrastructure for translational surgery - and associated funding by the University of Zurich and University Hospital Balgrist. 
