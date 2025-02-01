@@ -1,18 +1,23 @@
-# **calib-proj**
+# calib-proj
+![Python Versions](https://img.shields.io/badge/Python-3.9%20%7C%203.10%20%7C%203.11%20%7C%203.12-blue)
+[![arXiv](https://img.shields.io/badge/arXiv-2501.16221-b31b1b.svg)](https://arxiv.org/abs/2501.16221)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+
 
 A Python package for performing **external calibration** of multi-camera systems via the projection of multi-scale markers (MSMs) from a video projector.
 
----
 
 
-## Table of Contents 📋
-- [Installation](#installation) 🔧
-- [Documentation](#-documentation) 🗎
-- [How To Use](#how-to-use) ❔
-- [License](#-license) 📃
-- [Acknowledgments](#)
+## **Table of Contents** 📋
+- [Installation](#installation) 
+- [Documentation](#documentation) 
+- [How To Use](#how-to-use) 
+- [How it Works](#how-it-works)
+- [Citation](#citation)
+- [License](#license) 
+- [Acknowledgments](#acknowledgments)
 
-## **Installation** 🔧
+## **Installation** 
 
 
 ### Dependencies (calib-commons) ⛓️
@@ -46,7 +51,7 @@ The package depends on the custom utilities Python package 🧰 [`calib-commons`
 
 
 
-## **Documentation** 🗎
+## **Documentation** 
 
 ### 📝 **Prequisites**
 Ensure you have the following before running the package:
@@ -56,7 +61,7 @@ Ensure you have the following before running the package:
 
 
 
-## ❔ **How To Use**
+## **How To Use**
 
 ### 1. Projection Sequence Generation
 
@@ -113,7 +118,7 @@ The will run the 4 steps:
 - calibration 
 
 
-### 4. Output 📤
+### 4. Output 
 The camera poses 📐are saved in ***results/camera_poses.json***.
 
 In addition, the following **metrics** 🎯, per camera and overall, are saved in ***results/metrics.json***: 
@@ -137,10 +142,10 @@ In addition, the following **metrics** 🎯, per camera and overall, are saved i
 
 ---
 
-## ❔ **How It Works**
+## **How It Works**
 
 
-# Citation
+## **Citation**
 
 If you find this package useful and use it in your work, please consider citing:
 
@@ -160,7 +165,7 @@ Flückiger, T., Hein, J., Fischer, V., Fürnstahl, P., & Calvet, L. (2025). Auto
 ```
 ---
 
-## 📃 **License**
+## **License**
 
 This project is licensed under the **MIT License**. See the [LICENSE](https://github.com/tflueckiger/calib-board/blob/main/LICENSE) file for details.
 

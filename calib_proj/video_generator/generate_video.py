@@ -32,7 +32,8 @@ def generate_video(msm_base_size: int,
                    video_fps: int = 30,
                    white_duration: int = 1, 
                    invert_colors: bool = True, 
-                   synch_seq_duration = 3):
+                   synch_seq_duration = 3, 
+                   save_grids: bool = False):
     
     if not os.path.exists(video_folder):
         os.makedirs(video_folder)
@@ -91,6 +92,11 @@ def generate_video(msm_base_size: int,
 
     repeat_grid_factor = video_fps // grid_fps
 
+    if save_grids:
+        grids_folder = os.path.join(video_folder, 'grids')
+        if not os.path.exists(grids_folder):
+            os.makedirs(grids_folder)
+
     grid_idx = 1
     for shift_idx, grid_coords in tqdm(grids_coords.items(), total=len(grids_coords), desc="Generating video frames"):
         for scale_idx, scale in enumerate(msm_scales):
@@ -110,12 +116,18 @@ def generate_video(msm_base_size: int,
                     id += 1
             grid_img = cv2.cvtColor(np.array(grid_image), cv2.COLOR_RGB2BGR)
 
+          
+
             # cv2.imshow('Grid Image', grid_img)
             # cv2.waitKey(0)
             # cv2.destroyAllWindows()
 
             if invert_colors:
                 grid_img = 255 - grid_img
+
+            if save_grids:
+                grid_img_path = os.path.join(grids_folder, f'{grid_idx}.png')
+                cv2.imwrite(grid_img_path, grid_img)
 
             for _ in range(repeat_grid_factor):
                 video_writer.write(grid_img)
