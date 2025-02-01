@@ -2,8 +2,9 @@
 ![Python Versions](https://img.shields.io/badge/Python-3.9%20%7C%203.10%20%7C%203.11%20%7C%203.12-blue)
 [![arXiv](https://img.shields.io/badge/arXiv-2501.16221-b31b1b.svg)](https://arxiv.org/abs/2501.16221)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+![Image](https://github.com/user-attachments/assets/8fa819b6-3e39-4bdb-8762-e9db77935d3b)
 
-
+## Automatic Multi-Camera System External Calibration
 A Python package for performing **external calibration** of multi-camera systems via the projection of multi-scale markers (MSMs) from a video projector.
 
 
