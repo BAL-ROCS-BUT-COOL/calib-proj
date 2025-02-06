@@ -2,9 +2,11 @@
 ![Python Versions](https://img.shields.io/badge/Python-3.9%20%7C%203.10%20%7C%203.11%20%7C%203.12-blue)
 [![arXiv](https://img.shields.io/badge/arXiv-2501.16221-b31b1b.svg)](https://arxiv.org/abs/2501.16221)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+![Image](https://github.com/user-attachments/assets/37ad247e-3380-4082-b493-3d8a585ac817)
 
+##  Multi-Camera System Automatic External Calibration
 
-A Python package for performing **external calibration** of multi-camera systems via the projection of multi-scale markers (MSMs) from a video projector.
+**calib-proj** is the Python implementation of an [automatic external calibration method for multi-camera systems](https://arxiv.org/abs/2501.16221) that eliminates the need for operator intervention or specialized expertise. The method specifically addresses the problem of limited overlapping fields of view caused by significant variations in optical zoom levels and camera locations via the projection of multi-scale markers (MSMs) using a ceiling-mounted projector. MSMs consist of 2D patterns projected at varying scales, ensuring accurate extraction of well distributed point correspondences across significantly different viewpoints and zoom levels. 
 
 
 
@@ -12,8 +14,7 @@ A Python package for performing **external calibration** of multi-camera systems
 - [Installation](#installation) 
 - [Documentation](#documentation) 
 - [How To Use](#how-to-use) 
-- [How it Works](#how-it-works)
-- [Citation](#citation)
+- [Paper](#paper)
 - [License](#license) 
 - [Acknowledgments](#acknowledgments)
 
@@ -142,15 +143,17 @@ In addition, the following **metrics** 🎯, per camera and overall, are saved i
 
 ---
 
-## **How It Works**
 
 
-## **Citation**
+## **Paper**
 
 If you find this package useful and use it in your work, please consider citing:
 
-Flückiger, T., Hein, J., Fischer, V., Fürnstahl, P., & Calvet, L. (2025). Automatic Calibration of a Multi-Camera System with Limited Overlapping Fields of View for 3D Surgical Scene Reconstruction. arXiv preprint arXiv:2501.16221. Available at: https://arxiv.org/abs/2501.16221
-
+APA-style:
+```
+Flückiger, T., Hein, J., Fischer, V., Fürnstahl, P., & Calvet, L. (2025). Automatic Calibration of a Multi-Camera System with Limited Overlapping Fields of View for 3D Surgical Scene Reconstruction. arXiv preprint arXiv:2501.16221. https://arxiv.org/abs/2501.16221
+```
+BibTeX:
 ```bibtex
 @misc{fluckiger2025automatic,
   title={Automatic Calibration of a Multi-Camera System with Limited Overlapping Fields of View for 3D Surgical Scene Reconstruction},
