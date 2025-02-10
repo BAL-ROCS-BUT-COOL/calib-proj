@@ -1,7 +1,6 @@
 import os
 # os.add_dll_directory("C:/Users/timfl/miniconda3/envs/master_thesis/Lib/site-packages/pupil_apriltags/lib")
 # os.add_dll_directory("C:/Program Files/MATLAB/R2023b/bin/win64")
-from pupil_apriltags import Detector
 import cv2
 import numpy as np
 
@@ -85,11 +84,14 @@ def detect_aruco_markers(image,
 
 
 def detect_apriltag_markers_detector(image, 
-                            at_detector: Detector,
+                            at_detector,
                             draw: bool = True, 
                             show_draw_img: bool = False,
                             print_centers: bool = False, 
                             print_corners: bool = False):
+    
+    # from pupil_apriltags import Detector
+
     
     gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
     

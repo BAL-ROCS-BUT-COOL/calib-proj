@@ -1,7 +1,6 @@
 import os
 from tqdm import tqdm
 import cv2 as cv
-from pupil_apriltags import Detector
 import numpy as np
 from enum import Enum
 
@@ -67,6 +66,7 @@ def detect_marker_centers(images_parent_folder,
         
         os.add_dll_directory("C:/Users/timfl/miniconda3/envs/master_thesis/Lib/site-packages/pupil_apriltags/lib")
         os.add_dll_directory("C:/Program Files/MATLAB/R2023b/bin/win64")
+        from pupil_apriltags import Detector
 
         at_detector = Detector(
                     families=dict, # tag16h5, tag25h9,tag36h11
