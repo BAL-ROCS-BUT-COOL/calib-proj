@@ -25,4 +25,4 @@ generate_video(msm_base_size=msm_base_size,
                grid_size=grid_size,
                grid_fps=grid_fps, 
                invert_colors=invert_colors, 
-               save_grids=True) 
+               save_grids=False) 
