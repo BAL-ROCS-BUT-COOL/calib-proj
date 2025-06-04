@@ -33,7 +33,13 @@ def synch_and_extract(video_folder, sequence_info_path, threshold=0.6):
 
     extract_frames(videos_path, sequence_info_path, start_end_frames, out_folder_path)
 
-def synch(video_folder, sequence_info_path, threshold=0.6):
+def synch(
+    video_folder: Path,
+    sequence_info_path: Path,
+    threshold: float,
+    start_time: float = 0.0,
+    end_time: float = None
+):
     print(f"Synchronizing cameras with sequence started...")
     seq_info = load_seq_info_json(sequence_info_path)
     seq_fps = seq_info['video_fps']
@@ -57,7 +63,7 @@ def synch(video_folder, sequence_info_path, threshold=0.6):
     for cam_name, video_path in tqdm(videos_path.items(), desc="Synchronization"):
         print(f" Processing {cam_name}...")
         start_end_frames[cam_name] = {}
-        received_signal = process_video_to_gray_mean(video_path)
+        received_signal = process_video_to_gray_mean(video_path, start_time, end_time)
         # plot_sequence(received_signal)
         for seq_name, synch_sequence in synch_sequences.items():
             # print(f"Detecting sequence {seq_name}...")
@@ -66,11 +72,11 @@ def synch(video_folder, sequence_info_path, threshold=0.6):
             # print(f"Sequence {seq_name} detected at index {detected_index}.")
             if detected_index is not None:
                 if seq_name == 'start':
-                    start_end_frames[cam_name][seq_name] = detected_index + mes_length
+                    start_end_frames[cam_name][seq_name] = detected_index + mes_length + start_time * cameras_fps[cam_name]
                     # print(f"Sequence {seq_name} start at index {detected_index + len(synch_sequence)}.")
                     print(f"Sequence start signal detected.")
                 elif seq_name == 'end':
-                    start_end_frames[cam_name][seq_name] = detected_index 
+                    start_end_frames[cam_name][seq_name] = detected_index + start_time * cameras_fps[cam_name]
                     print(f"Sequence end signal detected.")
 
                     # print(f"Sequence {seq_name} end at index {detected_index}.")
