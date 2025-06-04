@@ -1,6 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import cv2
+import warnings
 from scipy import signal
 
 
@@ -167,12 +168,15 @@ def detect_sync_sequence(received_signal, sync_sequence, seq_fps, cam_fps, thres
 
     return index_refined, mes_length
 
-def process_video_to_gray_mean(input_video_filename):
+def process_video_to_gray_mean(input_video_filename, start_time, end_time):
     """
     Charge une vidéo enregistrée, calcule la moyenne des valeurs de pixels en nuances de gris
-    pour chaque frame et renvoie un tableau numpy contenant des valeurs normalisées entre 0 et 1.
+    pour chaque frame comprise entre start_time et end_time, et renvoie un tableau numpy contenant
+    des valeurs normalisées entre 0 et 1.
 
     :param input_video_filename: Chemin du fichier vidéo à traiter.
+    :param start_time: Temps de début (en secondes) pour le traitement des frames.
+    :param end_time: Temps de fin (en secondes) pour le traitement des frames.
     :return: Tableau numpy contenant les moyennes normalisées entre 0 et 1.
     """
     # Initialiser la capture vidéo
@@ -180,19 +184,52 @@ def process_video_to_gray_mean(input_video_filename):
     if not cap.isOpened():
         raise ValueError(f"Impossible d'ouvrir la vidéo : {input_video_filename}")
 
-    mean_gray_values = []
+    # Obtenir les informations de la vidéo
+    fps = cap.get(cv2.CAP_PROP_FPS)
+    total_frames = cap.get(cv2.CAP_PROP_FRAME_COUNT)
+    duration = total_frames / fps if fps > 0 else 0
 
-    # Parcourir chaque frame de la vidéo
+    # Vérifier et ajuster start_time et end_time dans la plage valide
+    if start_time < 0:
+        warnings.warn(f"start_time ({start_time}) est négatif. Il est ramené à 0.")
+        start_time = 0.0
+    if end_time > duration:
+        warnings.warn(f"end_time ({end_time}) dépasse la durée réelle ({duration:.2f}s). Il est ramené à {duration:.2f}s.")
+        end_time = duration
+    if end_time <= start_time:
+        raise ValueError(f"end_time ({end_time}) doit être strictement supérieur à start_time ({start_time}).")
+
+    # Convertir les temps en index de frame
+    start_frame = int(start_time * fps)
+    end_frame = int(end_time * fps)
+
+    # Placer la capture à la frame de départ
+    cap.set(cv2.CAP_PROP_POS_FRAMES, start_frame)
+
+    mean_gray_values = []
+    current_frame = start_frame
+
+    # Parcourir les frames de start_frame à end_frame
     while True:
         ret, frame = cap.read()
         if not ret:
-            break  # Fin de la vidéo
+            break  # Fin de la vidéo ou problème de lecture
+
+        if current_frame > end_frame:
+            break  # On a atteint la frame de fin
 
         # Convertir en nuances de gris
         gray_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
         # Calculer la moyenne des valeurs de pixels
         mean_value = np.mean(gray_frame)
         mean_gray_values.append(mean_value)
+
+        current_frame += 1
+
+    # Si aucune frame n'a été traitée (cas improbable si end_time > start_time)
+    if len(mean_gray_values) == 0:
+        cap.release()
+        raise RuntimeError("Aucune frame traitée dans l'intervalle spécifié.")
 
     # Normaliser les valeurs entre 0 et 1
     mean_gray_values = np.array(mean_gray_values)
