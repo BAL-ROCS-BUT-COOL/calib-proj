@@ -103,8 +103,8 @@ def detect_apriltag_markers_detector(image,
     #     raise ValueError("parameters gestion not implemented for now (tim) pupil_apriltags")
 
     
-    tags = at_detector.detect(gray)
-    img = cv2.cvtColor(gray, cv2.COLOR_GRAY2RGB)
+    tags = at_detector.detect(image)
+    img = cv2.cvtColor(image, cv2.COLOR_GRAY2RGB)
 
     # cv2.namedWindow("win", cv2.WINDOW_NORMAL)
     corners = {}

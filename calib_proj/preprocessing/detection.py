@@ -104,7 +104,7 @@ def detect_marker_centers(images_parent_folder,
 
             # Use Otsu's algorithm to separate markers from background
             gray = cv.cvtColor(img, cv.COLOR_BGR2GRAY)
-            _, mask = cv.threshold(gray, 0, 255, cv.THRESH_BINARY + cv.THRESH_OTSU)
+            _, img = cv.threshold(gray, 0, 255, cv.THRESH_BINARY + cv.THRESH_OTSU)
             
             if marker_system_name == 'aruco':
                 # dictionary = cv.aruco.getPredefinedDictionary(cv.aruco.DICT_4X4_50)
