@@ -26,9 +26,6 @@ def detect_aruco_markers(image,
 
     if add_half_pixel_shift is None:
         raise ValueError("add_half_pixel_shift must be set to True or False")
-    
-    gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-
 
     # dictionary = cv2.aruco.getPredefinedDictionary(cv2.aruco.DICT_6X6_250)
     if parameters is None:
@@ -49,7 +46,7 @@ def detect_aruco_markers(image,
 
     detector = cv2.aruco.ArucoDetector(ARUCO_DICTIONARIES[dictionary], parameters)
 
-    corners, ids, rejected = detector.detectMarkers(gray)
+    corners, ids, rejected = detector.detectMarkers(image)
 
     if draw:
         if ids is not None:
@@ -91,9 +88,6 @@ def detect_apriltag_markers_detector(image,
                             print_corners: bool = False):
     
     # from pupil_apriltags import Detector
-
-    
-    gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
     
     # if parameters is None:
     #     at_detector = Detector(
