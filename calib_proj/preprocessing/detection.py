@@ -1,4 +1,5 @@
 import os
+import warnings
 from tqdm import tqdm
 import cv2 as cv
 import numpy as np
@@ -100,6 +101,10 @@ def detect_marker_centers(images_parent_folder,
             img = cv.imread(file_path)
             if inverted_projections: 
                 img = cv.bitwise_not(img)
+
+            # Use Otsu's algorithm to separate markers from background
+            gray = cv.cvtColor(img, cv.COLOR_BGR2GRAY)
+            _, img = cv.threshold(gray, 0, 255, cv.THRESH_BINARY + cv.THRESH_OTSU)
             
             if marker_system_name == 'aruco':
                 # dictionary = cv.aruco.getPredefinedDictionary(cv.aruco.DICT_4X4_50)
@@ -114,6 +119,13 @@ def detect_marker_centers(images_parent_folder,
                     
                     center = intersection_diagonales(corners_undistorted)
                     centers[cam][k][marker_id] = center
+
+        if all(map(lambda x: len(x) == 0, centers[cam].values())):
+            warnings.warn(
+                f"No {marker_system_name} markers were found in ANY image for camera '{cam}'. "
+                f"Please verify that these images contain the expected markers.",
+                category=UserWarning
+            )
 
     print(f"Detected markers successfully.")
     return centers
