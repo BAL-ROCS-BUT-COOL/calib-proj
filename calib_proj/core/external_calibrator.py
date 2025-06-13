@@ -72,17 +72,28 @@ class ExternalCalibrator:
         arrangements = list(itertools.combinations(cameras_id, 2))
         best_score = -np.inf
         best_cam_ids = None
+        
+        # Example arrangements: [(cam1, cam2), (cam1, cam3), (cam2, cam3)]
         for arrangement in arrangements:
-            cam0_id, cam1_id = arrangement            
+            cam0_id, cam1_id = arrangement 
+
+            # Finds common points for which ._is_conform is True, which is default when initializing Observation           
             common_points_id = set(self.get_conform_obs_in_cam(cam0_id).keys()) & set(self.get_conform_obs_in_cam(cam1_id).keys())
+            
+            # Find coordinates of common points
             image_points1 = [self.correspondences[cam1_id][pt_id]._2d for pt_id in common_points_id]
             image_points2 = [self.correspondences[cam0_id][pt_id]._2d for pt_id in common_points_id]
+
+            # Compute coverage score for the two cameras
             score1 = self.view_score(np.vstack(image_points1), self.intrinsics[cam1_id].resolution) if image_points1 else 0
             score2 = self.view_score(np.vstack(image_points2), self.intrinsics[cam0_id].resolution) if image_points2 else 0
             score = score1 + score2
+
+            # Pair of cameras with highest coverage score wins
             if score > best_score:
                 best_score = score
                 best_cam_ids = (cam0_id, cam1_id)
+
         return best_cam_ids
     
     def select_next_best_cam(self) -> int:
@@ -106,35 +117,63 @@ class ExternalCalibrator:
     def get_cameras_scores(self): 
         return {cam_id: self.get_camera_score(cam_id) for cam_id in self.estimate.scene.generic_scene.cameras.keys()}
 
-    def view_score(self, 
-                   image_points: np.ndarray, 
-                   image_resolution: Tuple):
-        s, L = 0, 3
+    def view_score(self,
+                   image_points: np.ndarray,
+                   image_resolution: Tuple[int, int]) -> float:
+        """
+        Compute a multi-scale “coverage” score for a set of image points.
+
+        At each scale l = 1..L, we split the image into a Kₗ×Kₗ grid (where Kₗ = 2^l)
+        and count how many distinct cells contain at least one point. Each newly occupied
+        cell at scale l contributes wₗ = Kₗ to the score. Summing over scales rewards
+        both wide spread (coarse scales) and fine detail (fine scales).
+
+        Args:
+            image_points: (N×2) array of (u,v) pixel coordinates.
+            image_resolution: (width, height) of the image.
+
+        Returns:
+            A scalar score: higher means points are more uniformly spread out.
+        """
+        score = 0.0         # running total
+        max_level = 3       # number of scales to consider (you can adjust L if desired)
         width, height = image_resolution
-        for l in range(1, L+1):
-            K_l = 2**l
-            w_l = K_l  # Assuming w_l = K_l is correct
-            grid = np.zeros((K_l, K_l), dtype=bool)
-            for point in image_points:
-                u,v = point
-                u = np.clip(u, 0, width-1)
-                v = np.clip(v, 0, height-1)
-                x = int(np.ceil(K_l * u / width)) - 1
-                y = int(np.ceil(K_l * v / height)) - 1
-                if grid[x, y] == False:
-                    grid[x, y] = True  # Mark the cell as full
-                    s += w_l  # Increase the score
-        return s
-    
-   
+
+        # Loop over pyramid levels l = 1,2,...,max_level
+        for level in range(1, max_level + 1):
+            K = 2 ** level        # grid will be K×K
+            weight = K            # weight for each new occupied cell
+            grid = np.zeros((K, K), dtype=bool)
+
+            # For each point, figure out which cell it falls into
+            for (u, v) in image_points:
+                # clamp to image bounds
+                u_clamped = np.clip(u, 0, width - 1)
+                v_clamped = np.clip(v, 0, height - 1)
+
+                # compute 0-based cell indices in [0..K-1]
+                # e.g. if u ≈ width then x = K-1
+                x = int(np.floor(u_clamped * K / width))
+                y = int(np.floor(v_clamped * K / height))
+
+                # if this cell hasn’t been counted yet, mark & add weight
+                if not grid[x, y]:
+                    grid[x, y] = True
+                    score += weight
+
+        return score
    
     def bootstrapping_from_initial_pair(self, 
                                         cam_id_1: idtype, 
                                         cam_id_2: idtype) -> bool: 
         print(f"*********** Bootstrapping from initial camera pair (cam1, cam2) = ({cam_id_1}, {cam_id_2}) ***********")
         pts_per_cam = {}
+        
+        # Retrieve conform points per cam, should be all by default
         pts_per_cam[cam_id_1] = {point_id: self.correspondences[cam_id_1][point_id]._2d for point_id in self.get_conform_obs_in_cam(cam_id_1).keys()}
         pts_per_cam[cam_id_2] = {point_id: self.correspondences[cam_id_2][point_id]._2d for point_id in self.get_conform_obs_in_cam(cam_id_2).keys()}
+
+        
         sols_intial_pair = retrieve_motion_using_homography(self.intrinsics[cam_id_1].K, self.intrinsics[cam_id_2].K, pts_per_cam[cam_id_1], pts_per_cam[cam_id_2])
         if not sols_intial_pair:
             return False
@@ -186,7 +225,14 @@ class ExternalCalibrator:
             print("\n *********** Cam " + str(cam_id_1) + " added ***********")
         if self.config.verbose >= 1:
             print("\n *********** Cam " + str(cam_id_2) + " added ***********")
+
+        for cam, obs in self.correspondences.items():
+            print(f"{cam:12}  observations BEFORE filter: {len(obs)}")
+
         self.correspondences = filter_correspondences_with_track_length(copy.deepcopy(self.correspondences), min_track_length=2)
+
+        for cam, obs in self.correspondences.items():
+            print(f"{cam:12}  observations AFTER  filter: {len(obs)}")
 
         # structure parameters estimation depending on solving level
         # free          -> N 3d object points
@@ -331,9 +377,13 @@ class ExternalCalibrator:
         K = self.intrinsics[cam_id].K
         common_points_id = set(self.get_conform_obs_in_cam(cam_id).keys()) & self.estimate.scene.generic_scene.get_point_ids()
 
+        print(f"cam_id: {cam_id}")
+        print(f"Correspondences: {len(list(self.correspondences.items()))}")
+        print(f"common_points_id: {list(common_points_id)[:5]}")
         # PnP
         _2d = [self.correspondences[cam_id][point_id]._2d for point_id in list(common_points_id)]
         _3d = [self.estimate.scene.generic_scene.object_points[point_id].position for point_id in list(common_points_id)]
+        print(f"_2d: {_2d[:5]}")
         _2d = np.vstack(_2d)
         _3d = np.vstack(_3d)
 

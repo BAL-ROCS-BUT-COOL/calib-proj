@@ -3,29 +3,72 @@ import numpy as np
 import calib_commons.utils.se3 as se3
 
 
-def estimate_inter_image_homography_normalized(K1, K2, pts_cam1, pts_cam2): 
+def estimate_inter_image_homography_normalized(K1: np.ndarray, 
+                                               K2: np.ndarray, 
+                                               pts_cam1: dict, 
+                                               pts_cam2: dict) -> np.ndarray: 
+    """
+    Estimate the normalized homography between two camera views.
+
+    1. Find the set of point-IDs observed by both cameras.
+    2. Back-project those image points into the normalized plane
+       by applying K⁻¹ to each (u,v,1) pixel.
+    3. Run RANSAC homography estimation on the normalized points.
+
+    Args:
+        K1: 3×3 intrinsics of camera 1.
+        K2: 3×3 intrinsics of camera 2.
+        pts_cam1: {pt_id: (u,v)} observations in image 1.
+        pts_cam2: {pt_id: (u,v)} observations in image 2.
+
+    Returns:
+        H_norm: 3×3 homography mapping normalized coords of cam1 → cam2,
+                      or None if not enough matches.
+    """
+    # Get all point-IDs seen by both cams
     common_points_ids = list(set(pts_cam1.keys()) & set(pts_cam2.keys()))
-    if len(common_points_ids) >= 4: 
-        pts_src = np.array([pts_cam1[point_id] for point_id in common_points_ids], dtype='float32').squeeze()
-        pts_dst = np.array([pts_cam2[point_id] for point_id in common_points_ids], dtype='float32').squeeze()
-        pts_src_normalized = (np.linalg.inv(K1) @ np.vstack((pts_src.T, np.ones(pts_src.shape[0]))) )[:2].T
-        pts_dst_normalized = (np.linalg.inv(K2) @ np.vstack((pts_dst.T, np.ones(pts_dst.shape[0]))) )[:2].T
-        H_normalized, _ = cv2.findHomography(pts_src_normalized, pts_dst_normalized, cv2.RANSAC)
-        return H_normalized
-    else:
+    if len(common_points_ids) < 4: 
         print(f"Cannot estimate homography with less than 4 common points.")
         return None
-        
-def retrieve_motion_using_homography(K1, K2, pts_cam1, pts_cam2, verbose=0):
-    H_normalized = estimate_inter_image_homography_normalized(K1, K2, pts_cam1, pts_cam2)
-    if H_normalized is None:
-        return None
-    sols = decompose_inter_image_homography_normalized(H_normalized, K1, K2, pts_cam1, pts_cam2, verbose=verbose)
-    return sols
     
+    pts_src = np.array([pts_cam1[point_id] for point_id in common_points_ids], dtype='float32').squeeze()
+    pts_dst = np.array([pts_cam2[point_id] for point_id in common_points_ids], dtype='float32').squeeze()
 
-def decompose_inter_image_homography_normalized(H_normalized, K1, K2, pts_cam1, pts_cam2, verbose=0):
-    decompositions = cv2.decomposeHomographyMat(H_normalized, K=np.eye(3))
+    # Normalize to camera-centric coordinates: (x,y,1) = K⁻¹ · (u,v,1)
+    pts_src_normalized = (np.linalg.inv(K1) @ np.vstack((pts_src.T, np.ones(pts_src.shape[0]))) )[:2].T
+    pts_dst_normalized = (np.linalg.inv(K2) @ np.vstack((pts_dst.T, np.ones(pts_dst.shape[0]))) )[:2].T
+    
+    # Compute homography in normalized space with RANSAC
+    H_norm, _ = cv2.findHomography(pts_src_normalized, pts_dst_normalized, cv2.RANSAC)
+    
+    return H_norm
+        
+
+def decompose_inter_image_homography_normalized(H_norm: np.ndarray,
+                                               K1: np.ndarray,
+                                               K2: np.ndarray,
+                                               pts_cam1: dict,
+                                               pts_cam2: dict,
+                                               verbose: int = 0) -> list[tuple[se3.SE3, np.ndarray]]:
+    """
+    Decompose a normalized homography into candidate relative poses.
+
+    1. Call OpenCV’s decomposeHomographyMat with K=I
+       → yields lists of (R₂₁, t₂₁, n₁) solutions.
+    2. Convert each to SE3, then count how many points
+       project in front of **both** cameras for disambiguation.
+    3. Return only the solution(s) with maximal “in-front” count.
+
+    Args:
+        H_norm: normalized 3×3 homography.
+        K1,K2: intrinsics (used to test front-side via K⁻¹).
+        pts_cam1, pts_cam2: {pt_id: (u,v)} for each cam.
+        verbose: debug verbosity.
+
+    Returns:
+        List of tuples (SE3_of_cam2_in_cam1_frame, plane_normal_in_cam1_frame).
+    """
+    decompositions = cv2.decomposeHomographyMat(H_norm, K=np.eye(3))
     if not decompositions[0]:
         print("Homography decomposition failed.")
         return None
@@ -71,4 +114,28 @@ def decompose_inter_image_homography_normalized(H_normalized, K1, K2, pts_cam1, 
         if verbose >= 2:
             print("There are two solutions from decomposing the inter-image homography that have the same number of points triangulated with positive depth in both cameras.") 
     return [(cam2_pose_list[i], n_1_list[i]) for i in sol_indices]
+        
+def retrieve_motion_using_homography(K1: np.ndarray,
+                                     K2: np.ndarray,
+                                     pts_cam1: dict,
+                                     pts_cam2: dict,
+                                     verbose: int = 0) -> list[tuple[se3.SE3, np.ndarray]]:
+    """
+    Given intrinsics K1,K2 and matched 2D points, estimate the possible
+    relative motions and plane normals between cam1→cam2 via homography.
+
+    Steps:
+      1. Estimate normalized homography H_norm.
+      2. Decompose H_norm into rotations, translations, normals.
+      3. Return only the solution(s) with the most points in front of both cams.
+
+    Returns:
+        A list of (SE3_pose_of_cam2, plane_normal_in_cam1_frame), possibly length 1 or 2.
+        Or None if homography fails.
+    """
+    H_norm = estimate_inter_image_homography_normalized(K1, K2, pts_cam1, pts_cam2)
+    if H_norm is None:
+        return None
+    sols = decompose_inter_image_homography_normalized(H_norm, K1, K2, pts_cam1, pts_cam2, verbose=verbose)
+    return sols
    
