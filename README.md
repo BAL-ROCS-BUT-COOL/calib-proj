@@ -14,7 +14,7 @@
 - [Installation](#installation) 
 - [Documentation](#documentation) 
 - [How To Use](#how-to-use) 
-- [Paper](#paper)
+- [Citation](#citation)
 - [License](#license) 
 - [Acknowledgments](#acknowledgments)
 
@@ -145,7 +145,7 @@ In addition, the following **metrics** 🎯, per camera and overall, are saved i
 
 
 
-## **Paper**
+## **Citation**
 
 
 BibTeX:
