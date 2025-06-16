@@ -147,12 +147,7 @@ In addition, the following **metrics** 🎯, per camera and overall, are saved i
 
 ## **Paper**
 
-If you find this package useful and use it in your work, please consider citing:
 
-APA-style:
-```
-Flückiger, T., Hein, J., Fischer, V., Fürnstahl, P., & Calvet, L. (2025). Automatic Calibration of a Multi-Camera System with Limited Overlapping Fields of View for 3D Surgical Scene Reconstruction. arXiv preprint arXiv:2501.16221. https://arxiv.org/abs/2501.16221
-```
 BibTeX:
 ```bibtex
 @misc{fluckiger2025automatic,
@@ -165,6 +160,10 @@ BibTeX:
   note={Preprint, arXiv:2501.16221},
   url={https://arxiv.org/abs/2501.16221}
 }
+```
+APA-style:
+```
+Flückiger, T., Hein, J., Fischer, V., Fürnstahl, P., & Calvet, L. (2025). Automatic Calibration of a Multi-Camera System with Limited Overlapping Fields of View for 3D Surgical Scene Reconstruction. arXiv preprint arXiv:2501.16221. https://arxiv.org/abs/2501.16221
 ```
 ---
 
