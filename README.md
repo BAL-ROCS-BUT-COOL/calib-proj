@@ -4,10 +4,19 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 ![Image](https://github.com/user-attachments/assets/37ad247e-3380-4082-b493-3d8a585ac817)
 
-##  Multi-Camera System Automatic External Calibration
+##  Automatic Multi-Camera External Calibration Using Projected Markers
 
-**calib-proj** is the Python implementation of an [automatic external calibration method for multi-camera systems](https://arxiv.org/abs/2501.16221) that eliminates the need for operator intervention or specialized expertise. The method specifically addresses the problem of limited overlapping fields of view caused by significant variations in optical zoom levels and camera locations via the projection of multi-scale markers (MSMs) using a ceiling-mounted projector. MSMs consist of 2D patterns projected at varying scales, ensuring accurate extraction of well distributed point correspondences across significantly different viewpoints and zoom levels. 
+CalibProj is a Python toolkit for automatically calibrating the positions and orientations of multiple cameras, even when they have very limited field of view overlap or they have very different zoom levels. **Unlike traditional methods, this approach requires no manual intervention, checkerboards, or prior calibration expertise.**
 
+CalibProj uses a ceiling-mounted projector to display specially designed multi-scale markers (MSMs)—2D patterns at varying sizes—onto the scene. These projected markers can be seen from multiple angles and distances, enabling cameras with different viewpoints and zoom settings to detect and extract accurate feature correspondences. **Importantly, the projector itself does not need to be calibrated.**
+
+The system automatically estimates the external calibration parameters (position and orientation) of each camera using only the images they capture of the projected markers—no user input required.
+
+This makes the system especially useful for:
+
+- Surveillance systems with cameras mounted far apart
+- Camera networks with different fields of view (e.g., in an operating room)
+- Multi-zoom or pan-tilt-zoom (PTZ) camera installations
 
 
 ## **Table of Contents** 📋
@@ -37,7 +46,7 @@ The package depends on the custom utilities Python package 🧰 [`calib-commons`
 > ⛓️ Dependencies : if the additional dependencies listed in requirements.txt are not satisfied, they will be automatically installed from PyPi. 
 
 
-### Installation of calib-proj
+### Installation of CalibProj
 
  ```bash
    # clone the repos
