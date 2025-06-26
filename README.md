@@ -1,22 +1,45 @@
-# CalibProj
-![Python Versions](https://img.shields.io/badge/Python-3.9%20%7C%203.10%20%7C%203.11%20%7C%203.12-blue)
-[![arXiv](https://img.shields.io/badge/arXiv-2501.16221-b31b1b.svg)](https://arxiv.org/abs/2501.16221)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-![Image](https://github.com/user-attachments/assets/37ad247e-3380-4082-b493-3d8a585ac817)
+
+<div align="center">
+<h1>CalibProj: Automatic Calibration of a Multi-Camera System <br>
+with Limited Overlapping Fields of View  <br>
+for 3D Surgical Scene Reconstruction
+
+</h1>
+
+
+[**Tim Flückiger**](https://www.linkedin.com/in/timflueckiger/)<sup>&#9733;</sup> · [**Jonas Hein**](https://scholar.google.com/citations?user=Kk_o9AYAAAAJ&hl=fr&oi=ao)<sup></sup> · [**Valery Fischer**](https://www.linkedin.com/in/valery-fischer/)<sup></sup>
+<br>
+[**Philipp Fürnstahl**](https://scholar.google.com/citations?user=nQ4B3BgAAAAJ&hl=fr)<sup></sup> · [**Lilian Calvet**](https://scholar.google.com/citations?user=6JewdrMAAAAJ&hl=fr)<sup></sup>
+
+<span>&#9733;</span> corresponding author
+
+<a href='https://arxiv.org/abs/2501.16221'><img src='https://img.shields.io/badge/arXiv-grey' alt='Paper PDF' height="30"></a>
+
+<a href='https://tflueckiger.github.io/calib-proj/'><img src='https://img.shields.io/badge/Project_Page-CalibProj-blue' alt='Project Page' height="30"></a>
+</div>
+
+
+<!-- ![Image](https://github.com/user-attachments/assets/37ad247e-3380-4082-b493-3d8a585ac817) -->
+
+<p align="center">
+  <img src="docs/static/images/SDT_ORX_Illustration.png" style="width:49%;" alt="TODO" />
+  <video id="dollyzoom" autoplay muted loop playsinline style="width:49%;">
+    <source src="docs/static/videos/video_iphone.mp4" type="video/mp4" />
+  </video>
+</p>
 
 ##  Automatic Multi-Camera External Calibration Using Projected Markers
 
-CalibProj is a Python toolkit for automatically calibrating the positions and orientations of multiple cameras, even when they have very limited field of view overlap or they have very different zoom levels. **Unlike traditional methods, this approach requires no manual intervention, checkerboards, or prior calibration expertise.**
+We present  <span style="font-variant:small-caps;">CalibProj</span>, a Python toolkit for <b>automatically calibrating the positions and orientations of multiple cameras</b>, even when they have very limited field of view overlap or they have very different zoom levels. Unlike traditional methods, this approach requires <b>no manual intervention, calibration board, or prior calibration expertise.</b>
 
-CalibProj uses a ceiling-mounted projector to display specially designed multi-scale markers (MSMs)—2D patterns at varying sizes—onto the scene. These projected markers can be seen from multiple angles and distances, enabling cameras with different viewpoints and zoom settings to detect and extract accurate feature correspondences. **Importantly, the projector itself does not need to be calibrated.**
+<span style="font-variant:small-caps;">CalibProj</span> uses a ceiling-mounted projector to display specially designed multi-scale markers (MSMs)—2D patterns at varying sizes—onto the scene. These projected markers can be seen from multiple angles and distances, enabling cameras with different viewpoints and zoom settings to detect and extract accurate feature correspondences. Importantly, <b>the projector itself does not need to be calibrated.</b>
+Such a system is especially useful for:
 
-The system automatically estimates the external calibration parameters (position and orientation) of each camera using only the images they capture of the projected markers—no user input required.
-
-This makes the system especially useful for:
-
-- Surveillance systems with cameras mounted far apart
-- Camera networks with different fields of view (e.g., in an operating room)
-- Multi-zoom or pan-tilt-zoom (PTZ) camera installations
+<ul>
+<li>Camera networks with different fields of view (e.g., in an operating room)</li>
+<li>Multi-zoom or pan-tilt-zoom (PTZ) camera installations</li>
+<li>Surveillance systems with cameras mounted far apart</li>
+</ul>
 
 
 ## **Table of Contents** 📋
