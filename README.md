@@ -22,10 +22,7 @@ for 3D Surgical Scene Reconstruction
 <!-- ![Image](https://github.com/user-attachments/assets/37ad247e-3380-4082-b493-3d8a585ac817) -->
 
 <p align="center">
-  <img src="docs/static/images/SDT_ORX_Illustration.png" style="width:49%;" alt="TODO" />
-  <video id="dollyzoom" autoplay muted loop playsinline style="width:49%;">
-    <source src="docs/static/videos/video_iphone.mp4" type="video/mp4" />
-  </video>
+  <img src="docs/static/images/SDT_ORX_Illustration.png" style="width:70%;" alt="TODO" />
 </p>
 
 ##  Automatic Multi-Camera External Calibration Using Projected Markers
