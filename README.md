@@ -1,7 +1,7 @@
 
 <div align="center">
-<h1>CalibProj: Automatic Calibration of a Multi-Camera System <br>
-with Limited Overlapping Fields of View  <br>
+<h1>CalibProj: Automatic Calibration of a Multi-Camera System 
+with Limited Overlapping Fields of View  
 for 3D Surgical Scene Reconstruction
 
 </h1>
