@@ -274,11 +274,12 @@
   </div>
 </section>
 
-
 <section class="section" id="BibTeX">
   <div class="container is-max-desktop content">
     <h2 class="title">BibTeX</h2>
-    <pre><code>@misc{flueckiger2025automatic,
+    <div class="code-block" style="position:relative;">
+      <button class="copy-btn" aria-label="Copy code">📋 Copy</button>
+<pre><code>@misc{flueckiger2025automatic,
       title={Automatic Calibration of a Multi-Camera System with Limited Overlapping Fields of View for 3D Surgical Scene Reconstruction}, 
       author={Tim Flückiger and Jonas Hein and Valery Fischer and Philipp Fürnstahl and Lilian Calvet},
       year={2025},
@@ -287,8 +288,12 @@
       primaryClass={cs.CV},
       url={https://arxiv.org/abs/2501.16221}, 
 }</code></pre>
+    </div>
   </div>
 </section>
+
+
+
 
 <section class="section" id="Acknowledgements">
     <div class="container is-max-desktop content">
@@ -321,6 +326,27 @@
     </div>
   </div>
 </footer>
+
+  <script>
+  document.addEventListener("DOMContentLoaded", () => {
+    const btns = document.querySelectorAll(".copy-btn");
+    btns.forEach(btn => {
+      btn.addEventListener("click", async () => {
+        const codeEl = btn.nextElementSibling.querySelector("code");
+        const text = codeEl.innerText;
+        try {
+          await navigator.clipboard.writeText(text);
+          btn.textContent = "✅ Copied!";
+          setTimeout(() => btn.textContent = "📋 Copy", 2000);
+        } catch {
+          console.error("Failed to copy text");
+        }
+      });
+    });
+  });
+  </script>
+</body>
+</html>
 
 </body>
 </html>
