@@ -179,21 +179,16 @@ In addition, the following **metrics** 🎯, per camera and overall, are saved i
 
 BibTeX:
 ```bibtex
-@misc{fluckiger2025automatic,
-  title={Automatic Calibration of a Multi-Camera System with Limited Overlapping Fields of View for 3D Surgical Scene Reconstruction},
-  author={Tim Flückiger and Jonas Hein and Valery Fischer and Philipp Fürnstahl and Lilian Calvet},
-  year={2025},
-  eprint={2501.16221},
-  archivePrefix={arXiv},
-  primaryClass={cs.CV},
-  note={Preprint, arXiv:2501.16221},
-  url={https://arxiv.org/abs/2501.16221}
+@article{fluckiger2025,
+  author  = {Tim Flückiger and Jonas Hein and Valery Fischer and Philipp Fürnstahl and Lilian Calvet},
+  title   = {Automatic calibration of a multi-camera system with limited overlapping fields of view for 3D surgical scene reconstruction},
+  journal = {International Journal of Computer Assisted Radiology and Surgery},
+  year    = {2025},
+  doi     = {10.1007/s11548-025-03413-1},
+  url     = {https://doi.org/10.1007/s11548-025-03413-1}
 }
 ```
-APA-style:
-```
-Flückiger, T., Hein, J., Fischer, V., Fürnstahl, P., & Calvet, L. (2025). Automatic Calibration of a Multi-Camera System with Limited Overlapping Fields of View for 3D Surgical Scene Reconstruction. arXiv preprint arXiv:2501.16221. https://arxiv.org/abs/2501.16221
-```
+
 ---
 
 ## **License**
