@@ -13,7 +13,7 @@ for 3D Surgical Scene Reconstruction
 
 <span>&#9733;</span> corresponding author
 
-<a href='https://arxiv.org/abs/2501.16221'><img src='https://img.shields.io/badge/arXiv-grey' alt='Paper PDF' height="30"></a>
+<a href='https://doi.org/10.1007/s11548-025-03413-1'><img src='https://img.shields.io/badge/paper-grey' alt='Paper PDF' height="30"></a>
 
 <a href='https://tflueckiger.github.io/calib-proj/'><img src='https://img.shields.io/badge/Project_Page-CalibProj-blue' alt='Project Page' height="30"></a>
 </div>
