@@ -96,19 +96,28 @@ def detect_marker_centers(images_parent_folder,
             centers[cam][k] = {}
 
             file_path = os.path.join(image_folder, filename)
-            # print(filename)
 
             img = cv.imread(file_path)
+            img = cv.convertScaleAbs(img, alpha=1.75, beta=30)
+
             if inverted_projections: 
                 img = cv.bitwise_not(img)
-
-            # Use Otsu's algorithm to separate markers from background
-            gray = cv.cvtColor(img, cv.COLOR_BGR2GRAY)
-            _, img = cv.threshold(gray, 0, 255, cv.THRESH_BINARY + cv.THRESH_OTSU)
             
             if marker_system_name == 'aruco':
                 # dictionary = cv.aruco.getPredefinedDictionary(cv.aruco.DICT_4X4_50)
-                markers, img_draw = detect_aruco_markers(img, dict, show_draw_img=show_detections, add_half_pixel_shift=False)
+                params =  cv.aruco.DetectorParameters()
+                # params.adaptiveThreshWinSizeMin = 3    # smaller window
+                # params.adaptiveThreshWinSizeMax = 23   # but allow up to 23px
+                # params.adaptiveThreshWinSizeStep = 5
+                # params.adaptiveThreshConstant = 3    # lower constant → keeps more pixels
+                # params.minOtsuStdDev = 1.0    # default 5.0 → lower means Otsu kicks in even on low‐contrast patches :contentReference[oaicite:0]{index=0}
+                # params.maxErroneousBitsInBorderRate = 0.6  # default 0.35 → allow up to 60% “bad” border bits :contentReference[oaicite:1]{index=1}
+                # params.errorCorrectionRate = 1.0    # default 0.6 → let error-correction use all available bits
+                # params.minMarkerPerimeterRate = 0.005   # default ≈0.03
+                # params.minCornerDistanceRate = 0.005   # default ≈0.05
+                # params.cornerRefinementMethod = cv.aruco.CORNER_REFINE_SUBPIX
+
+                markers, img_draw = detect_aruco_markers(img, dict, show_draw_img=show_detections, add_half_pixel_shift=False)#, parameters=params)
             elif marker_system_name == 'apriltag':
                 markers, img_draw = detect_apriltag_markers_detector(img, at_detector, show_draw_img=show_detections)
 
