@@ -1,20 +1,49 @@
-# calib-proj
-![Python Versions](https://img.shields.io/badge/Python-3.9%20%7C%203.10%20%7C%203.11%20%7C%203.12-blue)
-[![arXiv](https://img.shields.io/badge/arXiv-2501.16221-b31b1b.svg)](https://arxiv.org/abs/2501.16221)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-![Image](https://github.com/user-attachments/assets/37ad247e-3380-4082-b493-3d8a585ac817)
 
-##  Multi-Camera System Automatic External Calibration
+<div align="center">
+<h1>CalibProj: Automatic Calibration of a Multi-Camera System 
+with Limited Overlapping Fields of View  
+for 3D Surgical Scene Reconstruction
 
-**calib-proj** is the Python implementation of an [automatic external calibration method for multi-camera systems](https://arxiv.org/abs/2501.16221) that eliminates the need for operator intervention or specialized expertise. The method specifically addresses the problem of limited overlapping fields of view caused by significant variations in optical zoom levels and camera locations via the projection of multi-scale markers (MSMs) using a ceiling-mounted projector. MSMs consist of 2D patterns projected at varying scales, ensuring accurate extraction of well distributed point correspondences across significantly different viewpoints and zoom levels. 
+</h1>
 
+
+[**Tim Flückiger**](https://www.linkedin.com/in/timflueckiger/)<sup>&#9733;</sup> · [**Jonas Hein**](https://scholar.google.com/citations?user=Kk_o9AYAAAAJ&hl=fr&oi=ao)<sup></sup> · [**Valery Fischer**](https://www.linkedin.com/in/valery-fischer/)<sup></sup>
+<br>
+[**Philipp Fürnstahl**](https://scholar.google.com/citations?user=nQ4B3BgAAAAJ&hl=fr)<sup></sup> · [**Lilian Calvet**](https://scholar.google.com/citations?user=6JewdrMAAAAJ&hl=fr)<sup></sup>
+
+<span>&#9733;</span> corresponding author
+
+<a href='https://doi.org/10.1007/s11548-025-03413-1'><img src='https://img.shields.io/badge/paper-grey' alt='Paper PDF' height="30"></a>
+
+<a href='https://tflueckiger.github.io/calib-proj/'><img src='https://img.shields.io/badge/Project_Page-CalibProj-blue' alt='Project Page' height="30"></a>
+</div>
+
+
+<!-- ![Image](https://github.com/user-attachments/assets/37ad247e-3380-4082-b493-3d8a585ac817) -->
+
+<p align="center">
+  <img src="docs/static/images/SDT_ORX_Illustration.png" style="width:70%;" alt="TODO" />
+</p>
+
+##  Automatic Multi-Camera External Calibration Using Projected Markers
+
+We present  <span style="font-variant:small-caps;">CalibProj</span>, a Python toolkit for <b>automatically calibrating the positions and orientations of multiple cameras</b>, even when they have very limited field of view overlap or they have very different zoom levels. Unlike traditional methods, this approach requires <b>no manual intervention, calibration board, or prior calibration expertise.</b>
+
+<span style="font-variant:small-caps;">CalibProj</span> uses a ceiling-mounted projector to display specially designed multi-scale markers (MSMs)—2D patterns at varying sizes—onto the scene. These projected markers can be seen from multiple angles and distances, enabling cameras with different viewpoints and zoom settings to detect and extract accurate feature correspondences. Importantly, <b>the projector itself does not need to be calibrated.</b>
+Such a system is especially useful for:
+
+<ul>
+<li>Camera networks with different fields of view (e.g., in an operating room)</li>
+<li>Multi-zoom or pan-tilt-zoom (PTZ) camera installations</li>
+<li>Surveillance systems with cameras mounted far apart</li>
+</ul>
 
 
 ## **Table of Contents** 📋
 - [Installation](#installation) 
 - [Documentation](#documentation) 
 - [How To Use](#how-to-use) 
-- [Paper](#paper)
+- [Citation](#citation)
 - [License](#license) 
 - [Acknowledgments](#acknowledgments)
 
@@ -37,7 +66,7 @@ The package depends on the custom utilities Python package 🧰 [`calib-commons`
 > ⛓️ Dependencies : if the additional dependencies listed in requirements.txt are not satisfied, they will be automatically installed from PyPi. 
 
 
-### Installation of calib-proj
+### Installation of CalibProj
 
  ```bash
    # clone the repos
@@ -145,27 +174,21 @@ In addition, the following **metrics** 🎯, per camera and overall, are saved i
 
 
 
-## **Paper**
+## **Citation**
 
-If you find this package useful and use it in your work, please consider citing:
 
-APA-style:
-```
-Flückiger, T., Hein, J., Fischer, V., Fürnstahl, P., & Calvet, L. (2025). Automatic Calibration of a Multi-Camera System with Limited Overlapping Fields of View for 3D Surgical Scene Reconstruction. arXiv preprint arXiv:2501.16221. https://arxiv.org/abs/2501.16221
-```
 BibTeX:
 ```bibtex
-@misc{fluckiger2025automatic,
-  title={Automatic Calibration of a Multi-Camera System with Limited Overlapping Fields of View for 3D Surgical Scene Reconstruction},
-  author={Tim Flückiger and Jonas Hein and Valery Fischer and Philipp Fürnstahl and Lilian Calvet},
-  year={2025},
-  eprint={2501.16221},
-  archivePrefix={arXiv},
-  primaryClass={cs.CV},
-  note={Preprint, arXiv:2501.16221},
-  url={https://arxiv.org/abs/2501.16221}
+@article{fluckiger2025,
+  author  = {Tim Flückiger and Jonas Hein and Valery Fischer and Philipp Fürnstahl and Lilian Calvet},
+  title   = {Automatic calibration of a multi-camera system with limited overlapping fields of view for 3D surgical scene reconstruction},
+  journal = {International Journal of Computer Assisted Radiology and Surgery},
+  year    = {2025},
+  doi     = {10.1007/s11548-025-03413-1},
+  url     = {https://doi.org/10.1007/s11548-025-03413-1}
 }
 ```
+
 ---
 
 ## **License**

@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="description"
+        content="Automatic Calibration of a Multi-Camera System with Limited Overlapping Fields of View for 3D Surgical Scene Reconstruction">
+  <meta name="keywords" content="CalibProj, calib-proj, multi-camera calibration, 3D reconstruction, computer vision">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>CalibProj IPCAI 2025</title>
+
+ 
+  <link href="https://fonts.googleapis.com/css?family=Google+Sans|Noto+Sans|Castoro"
+        rel="stylesheet">
+
+  <link rel="stylesheet" href="./static/css/bulma.min.css">
+  <link rel="stylesheet" href="./static/css/bulma-carousel.min.css">
+  <link rel="stylesheet" href="./static/css/bulma-slider.min.css">
+  <link rel="stylesheet" href="./static/css/fontawesome.all.min.css">
+  <link rel="stylesheet"
+        href="https://cdn.jsdelivr.net/gh/jpswalsh/academicons@1/css/academicons.min.css">
+  <link rel="stylesheet" href="./static/css/index.css"> 
+  <link rel="icon" href="./static/images/logo.png"> <!-- TODO change icon for page bar. -->
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script defer src="./static/js/fontawesome.all.min.js"></script>
+  <script src="./static/js/bulma-carousel.min.js"></script>
+  <script src="./static/js/bulma-slider.min.js"></script>
+  <script src="./static/js/index.js"></script>
+</head>
+<body>
+
+
+
+
+<section class="hero">
+  <div class="hero-body">
+    <div class="container is-max-desktop">
+      <div class="columns is-centered">
+        <div class="column has-text-centered">
+
+          <h1 class="title is-3 publication-title">
+            CalibProj: Automatic Calibration of a Multi-Camera System<br>
+            with Limited Overlapping Fields of View
+          </h1>
+          
+            <h1 class="title is-5 publication-title" style="margin-top: -0.9em;">
+            for 3D Surgical Scene Reconstruction
+            </h1>
+        
+
+          <img src="./static/images/logo.png"
+                 alt="TODO" style="width: 20%; margin-bottom: 0.7em;" />
+          <h2 class="subtitle is-4 publication-subtitle">
+            <span> IPCAI 2025 Extended Oral</span>
+          </h2>
+          <div class="is-size-5 publication-authors">
+            <span class="author-block">
+              <a href="https://www.linkedin.com/in/timflueckiger/"><b>Tim Flückiger</b></a><sup>1,2*</sup>,</span>
+            <span class="author-block">
+              <a href="https://scholar.google.com/citations?user=Kk_o9AYAAAAJ&hl=fr&oi=ao">Jonas Hein</a><sup>1,2</sup>,</span>
+            <span class="author-block">
+              <a href="https://www.linkedin.com/in/valery-fischer/">Valery Fischer</a><sup>1</sup>,
+            </span>
+            <span class="author-block">
+              <a href="https://scholar.google.com/citations?user=nQ4B3BgAAAAJ&hl=fr">Philipp Fürnstahl</a><sup>1</sup>,
+            </span>
+            <span class="author-block">
+              <a href="https://scholar.google.com/citations?user=6JewdrMAAAAJ&hl=fr">Lilian Calvet</a><sup>1</sup>
+            </span>
+          </div>
+
+          <div class="is-size-5 publication-authors">
+            <span class="author-block"><sup>1</sup>Research in Orthopedic Computer Science, University Hospital Balgrist, University of Zurich, Switzerland,</span>
+            <span class="author-block"><sup>2</sup>Computer Vision and Geometry Group, ETH Zurich, Switzerland,</span>
+            <br>
+            <span class="author-block"><sup>*</sup>Corresponding author</span>
+
+          </div>
+
+          <div class="column has-text-centered">
+            <div class="publication-links">
+              <!-- PDF Link. -->
+              <span class="link-block">
+                <a href="https://doi.org/10.1007/s11548-025-03413-1"
+                   class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon">
+                      <i class="fas fa-file-pdf"></i>
+                  </span>
+                  <span>Paper</span>
+                </a>
+              </span>
+              <!-- <span class="link-block">
+                <a href="https://arxiv.org/abs/2011.12948"
+                   class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon">
+                      <i class="ai ai-arxiv"></i>
+                  </span>
+                  <span>arXiv</span>
+                </a>
+              </span> -->
+              <!-- Video Link. -->
+              <!-- <span class="link-block">
+                <a href="https://www.youtube.com/watch?v=MrKrnHhk8IA"
+                   class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon">
+                      <i class="fab fa-youtube"></i>
+                  </span>
+                  <span>Video</span>
+                </a>
+              </span> -->
+              <!-- Code Link. -->
+              <span class="link-block">
+                <a href="https://github.com/tflueckiger/calib-proj"
+                   class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon">
+                      <i class="fab fa-github"></i>
+                  </span>
+                  <span>Code</span>
+                  </a>
+              </span>
+
+               <span class="link-block">
+                <a href="./static/TODO.pdf" target="_blank"
+                   class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon">
+                      <i class="fas fa-file-pdf"></i>
+                  </span>
+                  <span>Poster</span>
+                </a>
+              </span>
+              <!-- Dataset Link. -->
+              <!-- <span class="link-block">
+                <a href="https://github.com/google/nerfies/releases/tag/0.1"
+                   class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon">
+                      <i class="far fa-images"></i>
+                  </span>
+                  <span>Data</span>
+                  </a>
+              </span> -->
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="hero teaser">
+    <div class="container is-max-desktop is-centered">
+        <div class="hero-body is-centered">
+            <img src="./static/images/SDT_ORX_Illustration.png" style="width:49%"
+                 alt="TODO"/>
+
+            <video id="dollyzoom" autoplay muted loop playsinline style="width:49%">
+            <source src="./static/videos/video_iphone.mp4"
+                    type="video/mp4">
+          </video>
+            <h2 class="subtitle has-text-centered">
+                Automatic external calibration of a multi-camera system using the projections of multi-scale markers (MSMs) on the operating room floor.
+            </h2>
+        </div>
+    </div>
+</section>
+
+
+
+<section class="section">
+  <div class="container is-max-desktop">
+    <!-- Intro -->
+    <div class="columns is-centered ">
+      <div class="column is-full-width has-text-justified">
+        <div class="content has-text-justified" style="margin-top: -3em;">
+          We present  <span class="dnerf">CalibProj</span>, a Python toolkit for <b>automatically calibrating the positions and orientations of multiple cameras</b>, even when they have very limited field of view overlap or they have very different zoom levels. Unlike traditional methods, this approach requires <b>no manual intervention, calibration board, or prior calibration expertise.</b>
+
+          <span class="dnerf">CalibProj</span> uses a ceiling-mounted projector to display specially designed multi-scale markers (MSMs)—2D patterns at varying sizes—onto the scene. These projected markers can be seen from multiple angles and distances, enabling cameras with different viewpoints and zoom settings to detect and extract accurate feature correspondences. Importantly, <b>the projector itself does not need to be calibrated.</b>
+          Such a system is especially useful for:
+
+          <ul>
+            <li>Camera networks with different fields of view (e.g., in an operating room)</li>
+            <li>Multi-zoom or pan-tilt-zoom (PTZ) camera installations</li>
+            <li>Surveillance systems with cameras mounted far apart</li>
+          </ul>
+        </div>
+
+        <div class="content">
+        
+          <video id="dollyzoom" autoplay muted loop playsinline height="100%">
+            <source src="./static/videos/sparse viewpoints.mp4"
+                    type="video/mp4">
+          </video>
+          <div class="has-text-centered">
+           Example viewpoints (left: GoPro Hero 10 Black, right: ceiling-mounted Canon CR-N300 with strong optical zoom) with different camera locations and zoom levels inducing an appearing scale factor of up to 19x on the surgical scene.
+          </div>
+          </div>
+      </div>
+    </div>
+    <!--/ Intro -->
+
+
+
+    
+
+      <!-- Calibration Setup -->
+    <div class="columns is-centered">
+      <div class="column is-full-width">
+        <h2 class="title is-3">Calibration Setup</h2>
+        <img src="./static/images/setup.png"
+              alt="TODO"/>
+        <div class="has-text-centered">
+          Overview of the proposed setup. Our multi-camera calibration system employs an entry-level projector (P, projection in blue). Cameras are highlighted in red. In this example, GoPro cameras placed in far field and in near field on surgical lamps, and a zoomed in Canon CR-N300 (C3) are employed.  Images from a farfield camera (C4, top) and a near field camera (C3, bottom) during the projection of the proposed MSM. Top: MSM is successfully detected (green cross) in the far-field view for a large scale projection (left) and not detected otherwise (right). Bottom: MSM is not detected in the near-field view for a large scale projection (left) and successfully detected otherwise (green cross in the right image), therefore providing one point correspondence between C3 and C4 through their shared imaged center. This operation is repeated, providing a set of dense and uniformly distributed point correspondences.
+        </div>
+        <br>
+        <br>
+
+      
+
+      </div>
+    </div>
+    <!--/ Calibration Setup -->
+
+
+    
+    <!-- Demo -->
+    <div class="columns is-centered">
+      <div class="column is-full-width">
+        <h2 class="title is-3">Demo</h2>
+          <div class="content">
+        
+          <video id="dollyzoom" autoplay controls muted loop playsinline height="100%">
+            <source src="./static/videos/projections_pp.mp4"
+                    type="video/mp4">
+          </video>
+
+          <div class="has-text-centered">
+            The projection of 12,800 markers, resulting in a dense grid of 3,200 multi-scale marker (MSM) centers (shown in red in the video) used as inter-view correspondences, takes 40 seconds.     The central viewpoint, captured by a Canon CR-N300 with high optical zoom, exhibits a relative scale factor of up to 19× compared to other far-field cameras. Despite this, the use of projected multi-scale markers enables the recovery of accurate inter-view correspondences.     </div>
+        </div>
+      </div>
+    </div>
+    <!--/ Demo -->
+
+
+      <!-- Application to 3D Human Pose Reconstruction -->
+    <div class="columns is-centered">
+      <div class="column is-full-width">
+        <h2 class="title is-3">Application to 3D Human Pose Reconstruction</h2>
+        <img src="./static/images/corresp_3_views.png"
+              alt="TODO"/>
+        <div class="has-text-centered">
+        <p><b>Top:</b> Examples of camera viewpoints used for 3D surgical scene reconstruction. From left to right: far-field camera C1 (ceiling-mounted GoPro), near-field camera C2 (surgical lamp-mounted GoPro), and near-field camera C3 (ceiling-mounted Canon CR-N300), zoomed in on the surgical field.</p>
+        <p><b>Bottom:</b> Inter-viewpoint correspondences provided by our multi-camera calibration system, observed from the same viewpoints. From left to right: all correspondences seen by C1 (blue, green, and red), correspondences between C1 and C2 (green), and correspondences between C1 and C3 (red). The surgeon’s body and hand poses, represented by blue lines in the first row, are successfully reconstructed using the estimated camera poses.</p>
+        </div>
+        <br>
+        <br>
+
+        <div class="content">
+          <video id="dollyzoom" autoplay muted loop playsinline height="100%">
+            <source src="./static/videos/sdt_3d_human_pose_with_inputs.mp4"
+                    type="video/mp4">
+          </video>
+          <div class="has-text-centered">
+          Application of our calibration method to 3D-SSR. <b>Left:</b> input videos from far-field camera (GoPro Hero 10 Black). <b>Right:</b> the surgeon’s body poses successfully reconstructed using camera poses computed with the proposed MSM-based calibration method. The reconstructed objects are integrated into the <a href="https://jonashein.github.io/surgerydigitization/">OR digital twin</a>.
+          </div>
+        </div>
+
+      </div>
+    </div>
+    <!--/ Application to 3D Human Pose Reconstruction -->
+
+
+    
+
+  </div>
+</section>
+
+<section class="section" id="BibTeX">
+  <div class="container is-max-desktop content">
+    <h2 class="title">BibTeX</h2>
+    <div class="code-block" style="position:relative;">
+      <button class="copy-btn" aria-label="Copy code">📋 Copy</button>
+<pre><code>@article{fluckiger2025,
+  author  = {Tim Flückiger and Jonas Hein and Valery Fischer and Philipp Fürnstahl and Lilian Calvet},
+  title   = {Automatic calibration of a multi-camera system with limited overlapping fields of view for 3D surgical scene reconstruction},
+  journal = {International Journal of Computer Assisted Radiology and Surgery},
+  year    = {2025},
+  doi     = {10.1007/s11548-025-03413-1},
+  url     = {https://doi.org/10.1007/s11548-025-03413-1}
+}</code></pre>
+    </div>
+  </div>
+</section>
+
+
+
+
+<section class="section" id="Acknowledgements">
+    <div class="container is-max-desktop content">
+        <h2 class="title">Acknowledgements</h2>
+        This work has been supported by the <a href="https://or-x.ch/" target="_blank" rel="noopener noreferrer">OR-X</a> - a swiss national research infrastructure for translational surgery - and associated funding by the University of Zurich and University Hospital Balgrist.
+    </div>
+</section>
+
+<footer class="footer">
+  <div class="container">
+    <div class="content has-text-centered">
+      
+      <a class="icon-link" href="https://www.linkedin.com/in/timflueckiger/" class="external-link" disabled>
+        <i class="fab fa-linkedin"></i>
+      </a>
+    </div>
+    <div class="columns is-centered">
+      <div class="column is-8">
+        <div class="content">
+          <p>
+            This website is licensed under a <a rel="license"
+                                                href="http://creativecommons.org/licenses/by-sa/4.0/">Creative
+            Commons Attribution-ShareAlike 4.0 International License</a>.
+          </p>
+           <p>
+              Website template from <a href="https://nerfies.github.io/" target="_blank">Nerfies</a>.
+            </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</footer>
+
+  <script>
+  document.addEventListener("DOMContentLoaded", () => {
+    const btns = document.querySelectorAll(".copy-btn");
+    btns.forEach(btn => {
+      btn.addEventListener("click", async () => {
+        const codeEl = btn.nextElementSibling.querySelector("code");
+        const text = codeEl.innerText;
+        try {
+          await navigator.clipboard.writeText(text);
+          btn.textContent = "✅ Copied!";
+          setTimeout(() => btn.textContent = "📋 Copy", 2000);
+        } catch {
+          console.error("Failed to copy text");
+        }
+      });
+    });
+  });
+  </script>
+</body>
+</html>
+
+</body>
+</html>
