@@ -19,14 +19,16 @@ from calib_commons.utils.utils import K_from_params
 
 class SceneGenerator: 
 
-    def __init__(self, 
-                 num_points: int, 
-                 cameras: Dict[idtype, Camera],
-                #  min_track_length: int, 
-                 noise_std: float,
-                 std_on_3d_points=None, 
-                 alpha: float = 1,
-                 pi = np.array([0.0,0.0,1.0,0])):
+    def __init__(
+        self, 
+        num_points: int, 
+        cameras: Dict[idtype, Camera],
+    #  min_track_length: int, 
+        noise_std: float,
+        std_on_3d_points=None, 
+        alpha: float = 1,
+        pi = np.array([0.0,0.0,1.0,0])
+    ):
         self.alpha = alpha
         # self.range_points = range_points
         self.num_points = num_points

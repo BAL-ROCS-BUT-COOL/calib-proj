@@ -11,12 +11,14 @@ from calib_commons.scene import Scene
 
 class ProjectorScene: 
 
-    def __init__(self, 
-                 cameras: Dict[idtype, Camera] = None, 
-                 object_points: Dict[idtype, ObjectPoint] = None, 
-                 projector: Camera = None,
-                 plane: Plane = None,
-                 scene_type: SceneType = None): 
+    def __init__(
+        self, 
+        cameras: Dict[idtype, Camera] = None, 
+        object_points: Dict[idtype, ObjectPoint] = None, 
+        projector: Camera = None,
+        plane: Plane = None,
+        scene_type: SceneType = None
+    ): 
         
         self.generic_scene = Scene(cameras, object_points, scene_type)
         self.projector = projector

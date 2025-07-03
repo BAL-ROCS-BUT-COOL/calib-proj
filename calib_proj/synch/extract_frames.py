@@ -57,6 +57,7 @@ def extract_frames(videos_folder, sequence_info_path, start_end_frames, out_fold
                 grid_id = list(frames_indices.keys())[list(frames_indices.values()).index(frame_idx)]+1
                 filename = f"{grid_id:06d}.png"
                 filepath = video_folder_path / filename
+                #frame = cv2.convertScaleAbs(frame, alpha=1.0, beta=50)
                 cv2.imwrite(filepath, frame)
             frame_idx += 1
            

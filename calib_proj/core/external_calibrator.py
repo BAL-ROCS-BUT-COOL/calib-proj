@@ -25,11 +25,12 @@ from calib_proj.utils.homography import retrieve_motion_using_homography
 
 class ExternalCalibrator: 
 
-    def __init__(self, 
-                 correspondences, 
-                 intrinsics: Dict[idtype, Intrinsics], 
-                 config: ExternalCalibratorConfig,
-                ): 
+    def __init__(
+        self, 
+        correspondences, 
+        intrinsics: Dict[idtype, Intrinsics], 
+        config: ExternalCalibratorConfig,
+    ): 
         self.config = config
         self.intrinsics = intrinsics
         self.correspondences = copy.deepcopy(correspondences)
@@ -117,9 +118,11 @@ class ExternalCalibrator:
     def get_cameras_scores(self): 
         return {cam_id: self.get_camera_score(cam_id) for cam_id in self.estimate.scene.generic_scene.cameras.keys()}
 
-    def view_score(self,
-                   image_points: np.ndarray,
-                   image_resolution: Tuple[int, int]) -> float:
+    def view_score(
+        self,
+        image_points: np.ndarray,
+        image_resolution: Tuple[int, int]
+    ) -> float:
         """
         Compute a multi-scale “coverage” score for a set of image points.
 
@@ -163,9 +166,11 @@ class ExternalCalibrator:
 
         return score
    
-    def bootstrapping_from_initial_pair(self, 
-                                        cam_id_1: idtype, 
-                                        cam_id_2: idtype) -> bool: 
+    def bootstrapping_from_initial_pair(
+        self, 
+        cam_id_1: idtype, 
+        cam_id_2: idtype
+    ) -> bool: 
         print(f"*********** Bootstrapping from initial camera pair (cam1, cam2) = ({cam_id_1}, {cam_id_2}) ***********")
         pts_per_cam = {}
         
@@ -226,13 +231,16 @@ class ExternalCalibrator:
         if self.config.verbose >= 1:
             print("\n *********** Cam " + str(cam_id_2) + " added ***********")
 
-        for cam, obs in self.correspondences.items():
-            print(f"{cam:12}  observations BEFORE filter: {len(obs)}")
+        if self.config.verbose >= 2:
+            for cam, obs in self.correspondences.items():
+                print(f"{cam:12}  total observations: {len(obs)}")
 
-        self.correspondences = filter_correspondences_with_track_length(copy.deepcopy(self.correspondences), min_track_length=2)
+        min_track_len = 2
+        self.correspondences = filter_correspondences_with_track_length(copy.deepcopy(self.correspondences), min_track_length=min_track_len)
 
-        for cam, obs in self.correspondences.items():
-            print(f"{cam:12}  observations AFTER  filter: {len(obs)}")
+        if self.config.verbose >= 2:
+            for cam, obs in self.correspondences.items():
+                print(f"{cam:12}  observations that are in at least {min_track_len} cams: {len(obs)}")
 
         # structure parameters estimation depending on solving level
         # free          -> N 3d object points
@@ -278,8 +286,12 @@ class ExternalCalibrator:
                 points = np.vstack((points, points_cam_2)) if points is not None else points_cam_2
                 ids += points_only_cam_2_ids
             
+            # Change coords takes the points and re-expresses them in the plane's coordinate frame
             points_plane = se3.change_coords(se3.inv_T(self.estimate.scene.plane.pose.mat), points)
             self.estimate._2d_plane_points = {id: points_plane[i,:2] for i, id in enumerate(ids)}
+
+            # Update self.scene.generic_scene.object_points with ObjectPoints representing the points 
+            # from the ids here expressed in 3D world coordinates
             self.estimate.update_points()
     
         return True 
@@ -308,22 +320,27 @@ class ExternalCalibrator:
         return best_cam_ids[0], third_cam_id
 
    
-    def triangulate_new_points(self, 
-                                cam_id_1: idtype, 
-                                cam_id_2: idtype) -> Dict[idtype, ObjectPoint]: 
+    def triangulate_new_points(
+        self, 
+        cam_id_1: idtype, 
+        cam_id_2: idtype
+    ) -> Dict[idtype, ObjectPoint]: 
+        
         common_points_ids_ = set(self.get_conform_obs_in_cam(cam_id_1).keys()) & \
                             set(self.get_conform_obs_in_cam(cam_id_2).keys())
         new_points_ids = list(common_points_ids_ - self.estimate.scene.generic_scene.get_point_ids())
-        if new_points_ids:
-            pts_src = np.array([self.correspondences[cam_id_1][point_id]._2d for point_id in new_points_ids], dtype='float32').squeeze()
-            pts_dst = np.array([self.correspondences[cam_id_2][point_id]._2d for point_id in new_points_ids], dtype='float32').squeeze()
-            points = cv2.triangulatePoints(self.estimate.scene.generic_scene.cameras[cam_id_1].get_projection_matrix(), 
-                                        self.estimate.scene.generic_scene.cameras[cam_id_2].get_projection_matrix(), 
-                                        pts_src.T, 
-                                        pts_dst.T)
-            points = points / points[3,:]
-            points = points[:3, :]
-            return {id: ObjectPoint(id, points[:,i]) for i, id in enumerate(new_points_ids)}
+        if not new_points_ids:
+            return {}
+        
+        pts_src = np.array([self.correspondences[cam_id_1][point_id]._2d for point_id in new_points_ids], dtype='float32').squeeze()
+        pts_dst = np.array([self.correspondences[cam_id_2][point_id]._2d for point_id in new_points_ids], dtype='float32').squeeze()
+        points = cv2.triangulatePoints(self.estimate.scene.generic_scene.cameras[cam_id_1].get_projection_matrix(), 
+                                    self.estimate.scene.generic_scene.cameras[cam_id_2].get_projection_matrix(), 
+                                    pts_src.T, 
+                                    pts_dst.T)
+        points = points / points[3,:]
+        points = points[:3, :]
+        return {id: ObjectPoint(id, points[:,i]) for i, id in enumerate(new_points_ids)}
 
          
     def iterative_filtering(self):
@@ -347,26 +364,35 @@ class ExternalCalibrator:
         for camera in self.estimate.scene.generic_scene.cameras.values(): 
             for point_id in point_ids: 
                 point = self.estimate.scene.generic_scene.object_points.get(point_id)
-                if point:
-                    observation = self.correspondences[camera.id].get(point.id)
-                    if observation and observation._is_conform:
-                        _2d_reprojection = camera.reproject(point.position)
-                        errors_xy = observation._2d - _2d_reprojection
-                        error = np.sqrt(np.sum(errors_xy**2))
-                        is_obsv_conform = error < self.config.reprojection_error_threshold
-                        #     print(f"observation of point {point.id:>3} in cam {camera.id} error: {error:.2f} [pix]")
-                        if not is_obsv_conform: 
-                            num_point_filtered += 1
-                            self.correspondences[camera.id][point.id]._is_conform = False 
-                            if self.config.SOLVING_LEVEL == SolvingLevel.FREE:
-                                min_track_length = 2
-                            elif self.config.SOLVING_LEVEL == SolvingLevel.PLANARITY:
-                                min_track_length = 1
-                            if len(self.get_tracks()[point.id]) < min_track_length:
-                                points_removed.append(point.id)
-                                del self.estimate.scene.generic_scene.object_points[point.id]
-                                if self.config.SOLVING_LEVEL == SolvingLevel.PLANARITY:
-                                    del self.estimate._2d_plane_points[point.id]
+                if not point:
+                    continue
+
+                observation = self.correspondences[camera.id].get(point.id)
+                if (not observation) or (not observation._is_conform):
+                    continue
+
+                _2d_reprojection = camera.reproject(point.position)
+                errors_xy = observation._2d - _2d_reprojection
+                error = np.sqrt(np.sum(errors_xy**2))
+                is_obsv_conform = error < self.config.reprojection_error_threshold
+                #     print(f"observation of point {point.id:>3} in cam {camera.id} error: {error:.2f} [pix]")
+                if is_obsv_conform: 
+                    continue
+
+                num_point_filtered += 1
+                self.correspondences[camera.id][point.id]._is_conform = False 
+                if self.config.SOLVING_LEVEL == SolvingLevel.FREE:
+                    min_track_length = 2
+                elif self.config.SOLVING_LEVEL == SolvingLevel.PLANARITY:
+                    min_track_length = 1
+
+                if len(self.get_tracks()[point.id]) >= min_track_length:
+                    continue
+
+                points_removed.append(point.id)
+                del self.estimate.scene.generic_scene.object_points[point.id]
+                if self.config.SOLVING_LEVEL == SolvingLevel.PLANARITY:
+                    del self.estimate._2d_plane_points[point.id]
                            
         if self.config.verbose >= 2:
             print(f" -> Number of observations filtered: {num_point_filtered}")
@@ -429,10 +455,12 @@ class ExternalCalibrator:
                 print("New points: None")   
     
     
-    def pnp(self, 
-            _2d: np.ndarray, 
-            _3d: np.ndarray, 
-            K: np.ndarray) -> np.ndarray: 
+    def pnp(
+        self, 
+        _2d: np.ndarray, 
+        _3d: np.ndarray, 
+        K: np.ndarray
+    ) -> np.ndarray: 
         """
        Solve PnP using RANSAC.
 
@@ -448,11 +476,13 @@ class ExternalCalibrator:
                 pose of the camera in the world frame {w} (the frame of the object-points)
         """
 
-        _, rvec, tvec, _ = cv2.solvePnPRansac(imagePoints=_2d, 
-                                                    objectPoints=_3d, 
-                                                    cameraMatrix=K, 
-                                                    distCoeffs=None, 
-                                                    useExtrinsicGuess=False)
+        _, rvec, tvec, _ = cv2.solvePnPRansac(
+            imagePoints=_2d, 
+            objectPoints=_3d, 
+            cameraMatrix=K, 
+            distCoeffs=None, 
+            useExtrinsicGuess=False
+        )
         
         T_C_W = se3.T_from_rvec_tvec(rvec, tvec)
         T_W_C = se3.inv_T(T_C_W)

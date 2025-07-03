@@ -70,14 +70,14 @@ def detect_marker_centers(images_parent_folder,
         from pupil_apriltags import Detector
 
         at_detector = Detector(
-                    families=dict, # tag16h5, tag25h9,tag36h11
-                    nthreads=1,
-                    quad_decimate=1.0,
-                    quad_sigma=0.0,
-                    refine_edges=1,
-                    decode_sharpening=0.25,
-                    debug=0
-                )
+            families=dict, # tag16h5, tag25h9,tag36h11
+            nthreads=1,
+            quad_decimate=1.0,
+            quad_sigma=0.0,
+            refine_edges=1,
+            decode_sharpening=0.25,
+            debug=0
+        )
         
     image_folders = {cam: os.path.join(images_parent_folder, cam) for cam in os.listdir(images_parent_folder) if os.path.isdir(os.path.join(images_parent_folder, cam))}
     intrinsics_paths = {cam: os.path.join(intrinsics_folder, cam + "_intrinsics.json") for cam in image_folders}    

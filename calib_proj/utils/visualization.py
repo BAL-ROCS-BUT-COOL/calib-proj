@@ -20,7 +20,17 @@ def visualize_scenes(scene: ProjectorScene, show_ids = True, show_only_points_wi
                 dpi = 300, 
                 elev=None, 
                 azim=None) -> None: 
-    generic_visualization.visualize_scenes([scene.generic_scene], show_ids, show_only_points_with_estimate, show_fig, save_fig, save_path, dpi, elev, azim)
+    generic_visualization.visualize_scenes(
+        [scene.generic_scene], 
+        show_ids, 
+        show_only_points_with_estimate, 
+        show_fig, 
+        save_fig, 
+        save_path, 
+        dpi, 
+        elev, 
+        azim
+    )
 
 
 def plot_scene(scene: ProjectorScene, xlim, ylim, zlim, show_ids = True, points_ids = None) -> None: 

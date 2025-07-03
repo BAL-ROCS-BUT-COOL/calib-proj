@@ -21,19 +21,21 @@ def load_seq_info_json(seq_path):
         seq_info = json.load(f)
     return seq_info
 
-def generate_video(msm_base_size: int, 
-                   msm_scales: List[int],
-                   n_grids: int, 
-                   projector_resolution: tuple[int, int], 
-                   grid_size: tuple[int, int], 
-                   marker_system: str = 'aruco_4X4_50', 
-                   video_folder: str = 'video', 
-                   grid_fps: int = 10, 
-                   video_fps: int = 30,
-                   white_duration: int = 1, 
-                   invert_colors: bool = True, 
-                   synch_seq_duration = 3, 
-                   save_grids: bool = False):
+def generate_video(
+    msm_base_size: int, 
+    msm_scales: List[int],
+    n_grids: int, 
+    projector_resolution: tuple[int, int], 
+    grid_size: tuple[int, int], 
+    marker_system: str = 'aruco_4X4_50', 
+    video_folder: str = 'video', 
+    grid_fps: int = 10, 
+    video_fps: int = 30,
+    white_duration: int = 1, 
+    invert_colors: bool = True, 
+    synch_seq_duration = 3, 
+    save_grids: bool = False
+):
     
     if not os.path.exists(video_folder):
         os.makedirs(video_folder)

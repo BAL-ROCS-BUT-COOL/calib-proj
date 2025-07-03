@@ -2,10 +2,12 @@ import random
 
 
 
-def generate_grid(projector_resolution, 
-                  margin, 
-                  grid_size,
-                  n_grids):
+def generate_grid(
+    projector_resolution, 
+    margin, 
+    grid_size,
+    n_grids
+):
     n_shifts_per_direction = int(n_grids**(1/2))
     w_proj, h_proj = projector_resolution
     n_h, n_w = grid_size

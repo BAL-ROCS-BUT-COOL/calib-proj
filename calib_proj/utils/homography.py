@@ -44,12 +44,14 @@ def estimate_inter_image_homography_normalized(K1: np.ndarray,
     return H_norm
         
 
-def decompose_inter_image_homography_normalized(H_norm: np.ndarray,
-                                               K1: np.ndarray,
-                                               K2: np.ndarray,
-                                               pts_cam1: dict,
-                                               pts_cam2: dict,
-                                               verbose: int = 0) -> list[tuple[se3.SE3, np.ndarray]]:
+def decompose_inter_image_homography_normalized(
+    H_norm: np.ndarray,
+    K1: np.ndarray,
+    K2: np.ndarray,
+    pts_cam1: dict,
+    pts_cam2: dict,
+    verbose: int = 0
+) -> list[tuple[se3.SE3, np.ndarray]]:
     """
     Decompose a normalized homography into candidate relative poses.
 
@@ -68,20 +70,24 @@ def decompose_inter_image_homography_normalized(H_norm: np.ndarray,
     Returns:
         List of tuples (SE3_of_cam2_in_cam1_frame, plane_normal_in_cam1_frame).
     """
-    decompositions = cv2.decomposeHomographyMat(H_norm, K=np.eye(3))
-    if not decompositions[0]:
+    retval, Rs, ts, normals = cv2.decomposeHomographyMat(H_norm, K=np.eye(3))
+    if not retval:
         print("Homography decomposition failed.")
         return None
+    
+    if verbose >= 2:
+        print(f"Found {len(Rs)} possible decompositions.")
     
     number_in_front_list = []
     cam2_pose_list = []
     n_1_list = []
-    num_solutions = len(decompositions[1])
-    if verbose >= 2:
-        print(f"Found {num_solutions} possible decompositions.")
-    for i, (R_2_1, t_2_1, n_1) in enumerate(zip(decompositions[1], decompositions[2], decompositions[3])):
-        T_2_1 = se3.T_from_rt(R_2_1, t_2_1)
-        T_W_2 = se3.inv_T(T_2_1) # T^W_2
+
+    # Evaluate all the possible decompositions
+    for i, (R_2_1, t_2_1, n_1) in enumerate(zip(Rs, ts, normals)):
+        
+        # Build transform T_2←1 then invert to get world←cam2
+        T_2_1 = se3.T_from_rt(R_2_1, t_2_1)     # 4×4: cam2←cam1
+        T_W_2 = se3.inv_T(T_2_1)                # world←cam2
         cam2_pose = se3.SE3(T_W_2)
         cam2_pose_list.append(cam2_pose)
         n_1_list.append(n_1)
@@ -113,13 +119,16 @@ def decompose_inter_image_homography_normalized(H_norm: np.ndarray,
     else:
         if verbose >= 2:
             print("There are two solutions from decomposing the inter-image homography that have the same number of points triangulated with positive depth in both cameras.") 
+            
     return [(cam2_pose_list[i], n_1_list[i]) for i in sol_indices]
         
-def retrieve_motion_using_homography(K1: np.ndarray,
-                                     K2: np.ndarray,
-                                     pts_cam1: dict,
-                                     pts_cam2: dict,
-                                     verbose: int = 0) -> list[tuple[se3.SE3, np.ndarray]]:
+def retrieve_motion_using_homography(
+    K1: np.ndarray,
+    K2: np.ndarray,
+    pts_cam1: dict,
+    pts_cam2: dict,
+    verbose: int = 0
+) -> list[tuple[se3.SE3, np.ndarray]]:
     """
     Given intrinsics K1,K2 and matched 2D points, estimate the possible
     relative motions and plane normals between cam1→cam2 via homography.

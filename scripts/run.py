@@ -157,14 +157,14 @@ def run_detection(frames_folder: Path, intrinsics_folder: Path, seq_info: dict,
     return centers
 
 
-def run_calibration(msm_centers, frames_folder: Path, intrinsics_folder: Path,
+def run_calibration(correspondences, frames_folder: Path, intrinsics_folder: Path,
                     out_folder: Path, config: ExternalCalibratorConfig,
                     show_viz: bool, save_viz: bool,
                     save_scene: bool, save_corr: bool,
                     save_metrics: bool):
     out_folder.mkdir(parents=True, exist_ok=True)
     intrinsics = construct_cameras_intrinsics(frames_folder, intrinsics_folder)
-    correspondences = convert_to_correspondences(msm_centers)
+
     calibrator = ExternalCalibrator(
         correspondences=correspondences,
         intrinsics=intrinsics,
@@ -175,6 +175,11 @@ def run_calibration(msm_centers, frames_folder: Path, intrinsics_folder: Path,
     if not success:
         print("Calibration failed.")
         return
+    
+    # ====================================================================
+    # Compute metrics, save and visualize scene
+    # ====================================================================
+
     scene_est = calibrator.get_scene(world_frame=WorldFrame.CAM_FIRST_CHOOSEN)
     generic_scene = scene_est.generic_scene
     generic_obsv = calibrator.correspondences
@@ -260,8 +265,6 @@ def main():
         end_time=args.sync_end
     )
 
-    print(start_end_frames)
-
     run_frame_extraction(
         args.videos_folder,
         args.sequence_info,
@@ -271,7 +274,7 @@ def main():
     )
 
     centers_cache = args.out_folder / "preprocessing" / "centers_unordered.pkl"
-    centers_unordered = run_detection( # PROBLEMATIC FUNCTION
+    centers_unordered = run_detection(
         frames_folder,
         args.intrinsics_folder,
         seq_info,
@@ -279,29 +282,99 @@ def main():
         show=args.show_detection,
         force=args.force_detect
     )
+    keep = ["gopro1", "gopro2", "gopro3", "gopro4"]
+    # ====================================================================
+    # centers_unordered structure:
+    #
+    #   {
+    #     cam (str): ──┐
+    #       └─ frame (int): ──┐
+    #           └─ marker_id (int) → np.ndarray(center coords)
+    #                                        (shape: e.g. (2,) or (3,))
+    #   }
+    #
+    # Example:
+    #   centers_unordered['gopro1'][1][3]
+    #     → the center for camera “gopro1”,
+    #       at frame 1, marker ID 3
+    # ====================================================================
+    # centers_unordered = {k: v for k, v in centers_unordered.items() if k in keep}
 
+    # ====================================================================
+    # centers_ordered structure:
+    #
+    #   {
+    #     cam (str): ──┐
+    #       └─ shift_idx (int): ──┐
+    #           └─ marker_id (int): ──┐
+    #               └─ scale_idx (int) → np.ndarray(center coords)
+    #                                        (shape: e.g. (2,) or (3,))
+    #   }
+    #
+    # Example:
+    #   centers_ordered['gopro1'][0][3][1]
+    #     → the marker‐center for camera “gopro1”,
+    #       at shift index 0, marker ID 3, scale index 1
+    # ====================================================================
     centers_ordered = order_centers(centers_unordered, seq_info)
+
+    # ====================================================================
+    #
+    # msm_centers structure:
+    #
+    #   {
+    #     cam (str): ──┐
+    #       └─ global_id (str) → np.ndarray(median center), shape (2,)
+    #                        (where global_id = f"{shift_idx}_{marker_id}")
+    #   }
+    #
+    # Example:
+    #   msm_centers['gopro1']['0_3']
+    #     → the median center over all scales for
+    #       camera “gopro1”, shift 0, marker 3
+    # ====================================================================
     msm_centers = msm_centers_from_marker_centers(centers_ordered)
 
+    # ====================================================================
+    #
+    # correspondences structure:
+    #
+    #   {
+    #     cam_id (str): ──┐
+    #       └─ pt_id (str) → Observation
+    #                       └─ ._2d: np.ndarray(center coords)
+    #                             (same shape as input)
+    #   }
+    #
+    # Example:
+    #   correspondences['gopro1']['0_3']._2d
+    #     → the same numpy array wrapped in an Observation
+    # ====================================================================
+    correspondences = convert_to_correspondences(msm_centers)
 
+    # Count corr
+    for cam, pts in correspondences.items():
+        print(f"Found {len(pts.keys())} correspondences for cam {cam}")
 
+    from calib_proj.core.config import SolvingLevel
     calib_config = ExternalCalibratorConfig(
         reprojection_error_threshold=args.reproj_error_threshold,
         camera_score_threshold=args.camera_score_threshold,
-        verbose=1,
-        least_squares_verbose=0,
+        verbose=2,
+        least_squares_verbose=2,
+        SOLVING_LEVEL=SolvingLevel.PLANARITY
     )
 
     run_calibration(
-        msm_centers,
+        correspondences,
         frames_folder,
         args.intrinsics_folder,
         args.out_folder,
         config=calib_config,
         show_viz=args.show_viz,
         save_viz=args.save_viz,
-        save_scene=False,
-        save_corr=False,
+        save_scene=True,
+        save_corr=True,
         save_metrics=True
     )
 

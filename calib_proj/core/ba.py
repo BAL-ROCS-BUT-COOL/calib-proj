@@ -9,7 +9,17 @@ from scipy.spatial.transform import Rotation as R
 class BA_Free:
     """Python class for Simple Bundle Adjustment using Rotation Vectors for rotation."""
 
-    def __init__(self, cameraArray, points3D, points2D, cameraIndices, point2DIndices, intrinsics, ftol = 1e-8, verbose=0):
+    def __init__(
+        self, 
+        cameraArray, 
+        points3D, 
+        points2D, 
+        cameraIndices, 
+        point2DIndices, 
+        intrinsics, 
+        ftol = 1e-8, 
+        verbose=0
+    ):
         """
         Initializes all the class attributes and instance variables.
 
@@ -62,6 +72,7 @@ class BA_Free:
         cy = self.cy[self.cameraIndices]
 
         # Convert 3D points to 2D using perspective projection
+        assert np.all(points_proj[:, 2] != 0), "Found zero depth—cannot divide!"
         points_proj = points_proj[:, :2] / points_proj[:, 2, np.newaxis]
         points_proj[:, 0] = points_proj[:, 0] * fx + cx
         points_proj[:, 1] = points_proj[:, 1] * fy + cy
@@ -115,15 +126,34 @@ class BA_Free:
         A = self.bundle_adjustment_sparsity(numCameras, numPoints, self.cameraIndices, self.point2DIndices)
 
         # Optimize the parameters (excluding the first camera)
-        res = least_squares(self.fun, x0, jac_sparsity=A, verbose=self.verbose, x_scale='jac', ftol=self.ftol, method='trf', 
-                            args=(numCameras, numPoints, self.cameraIndices, self.point2DIndices, self.points2D))
+        res = least_squares(
+            self.fun, 
+            x0, 
+            jac_sparsity=A, 
+            verbose=self.verbose, 
+            x_scale='jac', 
+            ftol=self.ftol, 
+            method='trf', 
+            args=(numCameras, numPoints, self.cameraIndices, self.point2DIndices, self.points2D)
+        )
         params = self.optimizedParams(res.x, numCameras, numPoints)
         return params
 
 class BA_PlaneConstraint:
     """Python class for Bundle Adjustment with points constrained on a plane."""
 
-    def __init__(self, cameraArray, plane_pose, points2D_in_plane, points2D, cameraIndices, point2DIndices, intrinsics, ftol = 1e-8, verbose=0):
+    def __init__(
+        self, 
+        cameraArray, 
+        plane_pose, 
+        points2D_in_plane, 
+        points2D, 
+        cameraIndices, 
+        point2DIndices, 
+        intrinsics, 
+        ftol = 1e-8, 
+        verbose=0
+    ):
         """
         Initializes all the class attributes and instance variables.
 
@@ -238,6 +268,7 @@ class BA_PlaneConstraint:
 
     def bundleAdjust(self):
         """Perform bundle adjustment to optimize rotation, translation vectors, and plane parameters."""
+        # cameraArray are the cameras' extrinsics
         numCameras = self.cameraArray.shape[0]
         numPoints = self.points2D_in_plane.shape[0]
 
@@ -247,7 +278,14 @@ class BA_PlaneConstraint:
         A = self.bundle_adjustment_sparsity(numCameras, numPoints, self.cameraIndices, self.point2DIndices)
 
         # Optimize the parameters (excluding the first camera)
-        res = least_squares(self.fun, x0, jac_sparsity=A, verbose=self.verbose, x_scale='jac', ftol=self.ftol, method='trf',
-                            args=(numCameras, numPoints, self.cameraIndices, self.point2DIndices, self.points2D))
+        res = least_squares(
+            self.fun, 
+            x0, 
+            jac_sparsity=A, 
+            verbose=self.verbose, x_scale='jac', 
+            ftol=self.ftol, 
+            method='trf',
+            args=(numCameras, numPoints, self.cameraIndices, self.point2DIndices, self.points2D)
+        )
         params = self.optimizedParams(res.x, numCameras, numPoints)
         return params

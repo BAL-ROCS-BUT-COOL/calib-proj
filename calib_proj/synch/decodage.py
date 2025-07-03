@@ -4,9 +4,6 @@ import cv2
 import warnings
 from scipy import signal
 
-
-
-
 def detect_sync_sequence(received_signal, sync_sequence, seq_fps, cam_fps, threshold=0.5, plot=True):
     """
     Détecte la position de la séquence de synchronisation dans le signal reçu en trouvant l'index avec la meilleure corrélation positive,
@@ -107,62 +104,62 @@ def detect_sync_sequence(received_signal, sync_sequence, seq_fps, cam_fps, thres
             best_index = index
             best_lag = lag
 
-    if 0:
-        i = best_index
-        meas_signal = received_signal[i:i + mes_length]
-        meas_signal = (meas_signal - np.mean(meas_signal)) / np.std(meas_signal)
+    
+    # i = best_index
+    # meas_signal = received_signal[i:i + mes_length]
+    # meas_signal = (meas_signal - np.mean(meas_signal)) / np.std(meas_signal)
 
-        fs_ref = round(seq_fps)  # Fréquence d'échantillonnage de la séquence de synchronisation
-        fs_meas = round(cam_fps)  # Fréquence d'échantillonnage du signal reçu
+    # fs_ref = round(seq_fps)  # Fréquence d'échantillonnage de la séquence de synchronisation
+    # fs_meas = round(cam_fps)  # Fréquence d'échantillonnage du signal reçu
 
-        # Trouvez la fréquence d'échantillonnage commune (par exemple, le PPCM)
-        fs_common = np.lcm(fs_ref, fs_meas)
+    # # Trouvez la fréquence d'échantillonnage commune (par exemple, le PPCM)
+    # fs_common = np.lcm(fs_ref, fs_meas)
 
-        # Facteurs de suréchantillonnage
-        up_ref = fs_common // fs_ref
-        up_meas = fs_common // fs_meas
+    # # Facteurs de suréchantillonnage
+    # up_ref = fs_common // fs_ref
+    # up_meas = fs_common // fs_meas
 
-        # Suréchantillonnage des signaux
-        ref_signal_upsampled = signal.resample_poly(ref_signal, up_ref, 1)
-        meas_signal_upsampled = signal.resample_poly(meas_signal, up_meas, 1)
+    # # Suréchantillonnage des signaux
+    # ref_signal_upsampled = signal.resample_poly(ref_signal, up_ref, 1)
+    # meas_signal_upsampled = signal.resample_poly(meas_signal, up_meas, 1)
 
-        # Temps pour les signaux suréchantillonnés
-        t_ref_upsampled = np.arange(len(ref_signal_upsampled)) / fs_common
-        t_meas_upsampled = np.arange(len(meas_signal_upsampled)) / fs_common
+    # # Temps pour les signaux suréchantillonnés
+    # t_ref_upsampled = np.arange(len(ref_signal_upsampled)) / fs_common
+    # t_meas_upsampled = np.arange(len(meas_signal_upsampled)) / fs_common
 
-        corr = signal.correlate(ref_signal_upsampled, meas_signal_upsampled, mode='full')
-        correlation = np.correlate(ref_signal_upsampled, meas_signal_upsampled)[0] / sync_length
+    # corr = signal.correlate(ref_signal_upsampled, meas_signal_upsampled, mode='full')
+    # correlation = np.correlate(ref_signal_upsampled, meas_signal_upsampled)[0] / sync_length
 
 
-        
-        # Tracé des signaux
-        plt.figure(figsize=(12, 8))
+    
+    # # Tracé des signaux
+    # plt.figure(figsize=(12, 8))
 
-        # Signal de référence original
-        plt.subplot(4, 1, 1)
-        plt.stem(np.arange(len(ref_signal)) / fs_ref, ref_signal, basefmt=" ")
-        plt.title('Signal de Référence Original')
-        plt.xlabel('Temps (s)')
-        plt.ylabel('Amplitude')
+    # # Signal de référence original
+    # plt.subplot(4, 1, 1)
+    # plt.stem(np.arange(len(ref_signal)) / fs_ref, ref_signal, basefmt=" ")
+    # plt.title('Signal de Référence Original')
+    # plt.xlabel('Temps (s)')
+    # plt.ylabel('Amplitude')
 
-        # Signal mesuré original
-        plt.subplot(4, 1, 2)
-        plt.stem(np.arange(len(meas_signal)) / fs_meas, meas_signal, basefmt=" ")
-        plt.title('Signal Mesuré Original')
-        plt.xlabel('Temps (s)')
-        plt.ylabel('Amplitude')
+    # # Signal mesuré original
+    # plt.subplot(4, 1, 2)
+    # plt.stem(np.arange(len(meas_signal)) / fs_meas, meas_signal, basefmt=" ")
+    # plt.title('Signal Mesuré Original')
+    # plt.xlabel('Temps (s)')
+    # plt.ylabel('Amplitude')
 
-        # Signaux suréchantillonnés
-        plt.subplot(4, 1, 3)
-        plt.plot(t_ref_upsampled, ref_signal_upsampled, label='Signal de Référence Suréchantillonné')
-        plt.plot(t_meas_upsampled, meas_signal_upsampled, label='Signal Mesuré Suréchantillonné', linestyle='dashed')
-        plt.title('Signaux Suréchantillonnés')
-        plt.xlabel('Temps (s)')
-        plt.ylabel('Amplitude')
-        plt.legend()
+    # # Signaux suréchantillonnés
+    # plt.subplot(4, 1, 3)
+    # plt.plot(t_ref_upsampled, ref_signal_upsampled, label='Signal de Référence Suréchantillonné')
+    # plt.plot(t_meas_upsampled, meas_signal_upsampled, label='Signal Mesuré Suréchantillonné', linestyle='dashed')
+    # plt.title('Signaux Suréchantillonnés')
+    # plt.xlabel('Temps (s)')
+    # plt.ylabel('Amplitude')
+    # plt.legend()
 
-        plt.tight_layout()
-        plt.show()
+    # plt.tight_layout()
+    # plt.show()
         
     index_refined = best_index - best_lag * cam_fps
 

@@ -14,15 +14,17 @@ ARUCO_DICTIONARIES = {'4X4_50': cv2.aruco.getPredefinedDictionary(cv2.aruco.DICT
                         '6X6_50': cv2.aruco.getPredefinedDictionary(cv2.aruco.DICT_6X6_50),
                         '7X7_50': cv2.aruco.getPredefinedDictionary(cv2.aruco.DICT_7X7_50)}
 
-def detect_aruco_markers(image, 
-                         dictionary: str, 
-                         parameters: cv2.aruco_DetectorParameters = None, 
-                         draw: bool = True, 
-                         show_draw_img: bool = False,
-                         print_centers: bool = False, 
-                         print_corners: bool = False, 
-                         add_half_pixel_shift = None, 
-                         refinement_method = cv2.aruco.CORNER_REFINE_SUBPIX):
+def detect_aruco_markers(
+    image, 
+    dictionary: str, 
+    parameters: cv2.aruco_DetectorParameters = None, 
+    draw: bool = True, 
+    show_draw_img: bool = False,
+    print_centers: bool = False, 
+    print_corners: bool = False, 
+    add_half_pixel_shift = None, 
+    refinement_method = cv2.aruco.CORNER_REFINE_SUBPIX
+):
 
     if add_half_pixel_shift is None:
         raise ValueError("add_half_pixel_shift must be set to True or False")
@@ -80,12 +82,14 @@ def detect_aruco_markers(image,
     return markers_dict, image
 
 
-def detect_apriltag_markers_detector(image, 
-                            at_detector,
-                            draw: bool = True, 
-                            show_draw_img: bool = False,
-                            print_centers: bool = False, 
-                            print_corners: bool = False):
+def detect_apriltag_markers_detector(
+    image, 
+    at_detector,
+    draw: bool = True, 
+    show_draw_img: bool = False,
+    print_centers: bool = False, 
+    print_corners: bool = False
+):
     
     # from pupil_apriltags import Detector
     
@@ -120,35 +124,37 @@ def detect_apriltag_markers_detector(image,
 
         corners[tag.tag_id] = detected_corners
 
-        if draw:
-            for i, corner in enumerate(detected_corners):
-                cv2.putText(
-                    img,
-                    str(i),
-                    org=(corner[0].astype(int) + 10, corner[1].astype(int) + 10),
-                    fontFace=cv2.FONT_HERSHEY_SIMPLEX,
-                    fontScale=0.4,
-                    color=(255, 0, 0),
-                )
-            for idx in range(len(tag.corners)):
-                cv2.line(
-                    img,
-                    tuple(tag.corners[idx - 1, :].astype(int)),
-                    tuple(tag.corners[idx, :].astype(int)),
-                    (0, 255, 0),
-                )
-
+        if not draw:
+            continue
+        
+        for i, corner in enumerate(detected_corners):
             cv2.putText(
                 img,
-                str(tag.tag_id),
-                org=(
-                    tag.corners[0, 0].astype(int) + 10,
-                    tag.corners[0, 1].astype(int) + 10,
-                ),
+                str(i),
+                org=(corner[0].astype(int) + 10, corner[1].astype(int) + 10),
                 fontFace=cv2.FONT_HERSHEY_SIMPLEX,
-                fontScale=0.8,
-                color=(0, 0, 255),
+                fontScale=0.4,
+                color=(255, 0, 0),
             )
+        for idx in range(len(tag.corners)):
+            cv2.line(
+                img,
+                tuple(tag.corners[idx - 1, :].astype(int)),
+                tuple(tag.corners[idx, :].astype(int)),
+                (0, 255, 0),
+            )
+
+        cv2.putText(
+            img,
+            str(tag.tag_id),
+            org=(
+                tag.corners[0, 0].astype(int) + 10,
+                tag.corners[0, 1].astype(int) + 10,
+            ),
+            fontFace=cv2.FONT_HERSHEY_SIMPLEX,
+            fontScale=0.8,
+            color=(0, 0, 255),
+        )
     if show_draw_img:   
         cv2.imshow('image', img)
         cv2.waitKey(0)
